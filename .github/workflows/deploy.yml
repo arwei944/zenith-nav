@@ -1,0 +1,25 @@
+name: Deploy to HF Space
+on:
+  push:
+    branches: [main]
+    paths: ['preview.html']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Hugging Face
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          pip install huggingface_hub
+          python3 -c "
+          from huggingface_hub import HfApi
+          api = HfApi()
+          api.create_repo(repo_id='arwei944/zenith-nav', repo_type='space', space_sdk='static', private=False, exist_ok=True)
+          api.upload_file(path_or_fileobj='preview.html', path_in_repo='index.html', repo_id='arwei944/zenith-nav', repo_type='space')
+          "
+          echo "Deployed $(wc -c < preview.html) bytes to HF Space"
