@@ -3,216 +3,612 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zenith — Minimal Navigation</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Zenith Nav</title>
 <style>
-/* === RESET & VARIABLES === */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
---bg:#1a1a1a;--surface:#1e1e1e;--surface-secondary:#252525;--surface-hover:#2a2a2a;
---text:#f5f2ed;--text-secondary:#a8a29e;--text-tertiary:#6b6560;
---accent:#e8a849;--border:#333;
---radius:12px;--sidebar-surface:#f5f2ed;--sidebar-text:#2c2c2c;--sidebar-text-secondary:#555;--sidebar-text-tertiary:#888;--sidebar-border:#ddd;
-}
-.light{
---bg:#fafafa;--surface:#fff;--surface-secondary:#f0f0f0;--surface-hover:#e8e8e8;
---text:#1a1a1a;--text-secondary:#555;--text-tertiary:#999;
---accent:#c78c30;--border:#e0e0e0;
-}
-html,body{height:100%;overflow:hidden}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);transition:background .4s,color .4s}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-input{font-family:inherit}
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
 
-/* === LAYOUT === */
-.app{display:flex;flex-direction:column;height:100vh;position:relative}
-.top-bar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;position:relative;z-index:10}
-.top-bar-left{display:flex;align-items:center;gap:12px}
-.site-name{font-size:18px;font-weight:600;letter-spacing:-.3px}
-.mod-key{font-size:11px;color:var(--text-tertiary);background:var(--surface-secondary);padding:2px 6px;border-radius:4px;border:1px solid var(--border)}
-.top-bar-right{display:flex;align-items:center;gap:8px}
-.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .2s;color:var(--text-secondary)}
-.icon-btn:hover{background:var(--surface-hover)}
-.icon-btn svg{width:18px;height:18px}
+  :root {
+    --bg: #f5f5f7;
+    --card: rgba(255,255,255,0.72);
+    --card-hover: rgba(255,255,255,0.92);
+    --text: #1d1d1f;
+    --text-secondary: #86868b;
+    --border: rgba(0,0,0,0.06);
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+    --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+    --radius: 14px;
+    --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
 
-/* === CONTENT === */
-.content-wrapper{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:48px;margin-top:64px;overflow-y:auto;padding:0 24px 24px}
-.hero{text-align:center}
-.hero h1{font-size:clamp(28px,5vw,48px);font-weight:300;letter-spacing:-1px;margin-bottom:4px}
-.hero .desc{font-size:14px;color:var(--text-tertiary)}
-.search-box{position:relative;width:100%;max-width:560px}
-.search-box input{width:100%;padding:12px 16px 12px 44px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
-.search-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,168,73,.15)}
-.search-box input::placeholder{color:var(--text-tertiary)}
-.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--text-tertiary)}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* === QUICK LAUNCH === */
-.quick-launch{width:100%;max-width:560px}
-.quick-launch-row{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
-.ql-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;width:64px;cursor:grab}
-.ql-item img{width:32px;height:32px;border-radius:8px}
-.ql-title{font-size:11px;color:var(--text-tertiary);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:64px}
-.ql-add{display:flex;flex-direction:column;align-items:center;gap:8px;width:64px;cursor:pointer;color:var(--text-tertiary);opacity:.6;transition:opacity .2s}
-.ql-add:hover{opacity:1}
-.ql-add-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:1.5px dashed var(--border);border-radius:8px;font-size:18px}
-.ql-add span{font-size:11px}
-.ql-form{display:flex;gap:8px;width:100%;max-width:560px;margin-top:8px}
-.ql-form input{flex:1;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none}
-.ql-form input:focus{border-color:var(--accent)}
-.btn-sm{padding:6px 14px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;font-weight:500;transition:opacity .2s}
-.btn-sm:hover{opacity:.85}
-.btn-sm:disabled{opacity:.4;cursor:not-allowed}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* === CARD CANVAS === */
-.card-canvas{position:relative;width:100%;max-width:1200px;min-height:200px}
+  /* macOS Menu Bar */
+  .menubar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(245,245,247,0.78);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0 24px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-/* === CARD BOX === */
-.card-box{position:absolute;background:var(--card-bg,var(--surface));border:1px solid var(--border);border-radius:var(--radius);overflow:clip;display:flex;flex-direction:column;transition:box-shadow .2s;min-width:180px;min-height:120px}
-.card-box:hover{box-shadow:0 4px 20px rgba(0,0,0,.15)}
-.card-box.dragging{opacity:.85;z-index:100;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-.card-box-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;cursor:grab;user-select:none;border-bottom:1px solid var(--border)}
-.card-box-header:active{cursor:grabbing}
-.cat-name{font-size:13px;font-weight:500}
-.cat-actions{display:flex;gap:4px;opacity:0;transition:opacity .2s}
-.card-box:hover .cat-actions{opacity:1}
-.cat-actions button{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;color:var(--text-tertiary);transition:background .15s,color .15s}
-.cat-actions button:hover{background:var(--surface-hover);color:var(--text)}
-.cat-actions button svg{width:14px;height:14px}
-.card-box-body{flex:1;overflow-y:auto;padding:4px 0}
-.link-row{display:flex;align-items:center;gap:8px;padding:6px 12px;position:relative;transition:all .15s;border-radius:6px;margin:0 4px}
-.link-row:hover{background:var(--card-row-hover,var(--surface-hover));padding-left:10px}
-.link-row img{width:16px;height:16px;border-radius:4px;flex-shrink:0}
-.link-title{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.link-actions{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;gap:2px;opacity:0;transition:opacity .15s}
-.link-row:hover .link-actions{opacity:1}
-.link-actions button{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:4px;color:var(--text-tertiary);transition:background .15s}
-.link-actions button:hover{background:var(--surface-hover);color:var(--text)}
-.link-actions button svg{width:12px;height:12px}
-.inline-form{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--border)}
-.inline-form input{flex:1;padding:4px 8px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;outline:none}
-.inline-form input:focus{border-color:var(--accent)}
-.card-box-resize{position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;opacity:.3;transition:opacity .2s}
-.card-box:hover .card-box-resize{opacity:.6}
-.card-box-resize::after{content:'';position:absolute;right:4px;bottom:4px;width:8px;height:8px;border-right:2px solid var(--text-tertiary);border-bottom:2px solid var(--text-tertiary)}
+  .menubar-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
 
-/* === SETTINGS DRAWER === */
-.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;opacity:0;pointer-events:none;transition:opacity .3s}
-.settings-overlay.active{opacity:1;pointer-events:auto}
-.settings-drawer{position:fixed;top:0;right:0;width:300px;height:100vh;background:#f5f2ed;color:var(--sidebar-text,#2c2c2c);transform:translateX(100%);transition:transform .35s cubic-bezier(.16,1,.3,1);z-index:101;overflow-y:auto;padding:20px}
-.settings-drawer.active{transform:translateX(0)}
-.settings-drawer .desc{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .sec-value{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .sec-arrow{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .label{color:var(--sidebar-text-secondary,#555)}
-.settings-drawer .setting-row .label{color:var(--sidebar-text-secondary,#555)}
-.settings-drawer .section-title{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .setting-label{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .data-btn{color:var(--sidebar-text-secondary,#555)}
-.settings-drawer .data-btn.danger{color:#e53e3e}
-.settings-drawer .divider{background:var(--sidebar-border,#ddd)}
-.settings-drawer .slider-label{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .slider-value{color:var(--sidebar-text-secondary,#555)}
-.settings-drawer .pill{color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer .pill.active{background:var(--accent);color:#fff}
-.settings-drawer .setting-input{color:var(--sidebar-text,#2c2c2c)}
-.settings-drawer .setting-input::placeholder{color:var(--sidebar-text-tertiary,#aaa)}
-.settings-drawer .switch .thumb{background:var(--sidebar-text,#2c2c2c)}
-.settings-drawer .switch{background:#e8e5e0;border-color:#ddd}
-.settings-drawer .brightness-slider input[type="range"]{background:#e8e5e0}
-.settings-drawer .brightness-slider input[type="range"]::-webkit-slider-thumb{background:var(--accent);border-color:#f5f2ed;box-shadow:0 0 0 1px #ddd}
-.settings-drawer #contrastBtn{background:#e8e5e0;border-color:#ddd;color:var(--sidebar-text-tertiary,#888)}
-.settings-drawer h2{color:var(--sidebar-text,#2c2c2c)}
-.settings-close{position:absolute;top:16px;right:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;color:var(--sidebar-text-tertiary,#888);transition:background .15s}
-.settings-close:hover{background:rgba(0,0,0,.06)}
-.settings-section{margin-bottom:4px}
-.settings-section-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer;user-select:none}
-.settings-section-header h3{font-size:13px;font-weight:500;color:var(--sidebar-text,#2c2c2c)}
-.settings-section-body{max-height:0;overflow:hidden;transition:max-height .3s ease,opacity .3s;opacity:0}
-.settings-section-body.open{max-height:2000px;opacity:1}
-.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-.setting-row-inline{margin-bottom:14px}
-.label{font-size:13px;color:var(--sidebar-text-secondary,#555)}
-.setting-input{width:100%;padding:8px 12px;background:rgba(0,0,0,.04);border:1px solid var(--sidebar-border,#ddd);border-radius:8px;color:var(--sidebar-text,#2c2c2c);font-size:13px;outline:none}
-.setting-input:focus{border-color:var(--accent)}
-.divider{height:1px;background:var(--sidebar-border,#ddd);margin:16px 0}
-.section-title{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--sidebar-text-tertiary,#888);margin-bottom:8px}
-.pill{padding:4px 10px;border-radius:6px;font-size:12px;border:1px solid var(--sidebar-border,#ddd);background:transparent;transition:all .15s;color:var(--sidebar-text-tertiary,#888)}
-.pill:hover{background:rgba(0,0,0,.05)}
-.pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.switch{position:relative;width:40px;height:22px;border-radius:11px;background:#e8e5e0;border:1px solid #ddd;cursor:pointer;transition:background .2s}
-.switch.on{background:var(--accent);border-color:var(--accent)}
-.switch .thumb{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--sidebar-text,#2c2c2c);transition:transform .2s}
-.switch.on .thumb{transform:translateX(18px);background:#fff}
-.data-btn{padding:8px 14px;border:1px solid var(--sidebar-border,#ddd);border-radius:8px;font-size:12px;transition:all .15s;color:var(--sidebar-text-secondary,#555)}
-.data-btn:hover{background:rgba(0,0,0,.05)}
-.data-btn.danger{color:#e53e3e;border-color:#e53e3e}
-.data-btn.danger:hover{background:rgba(229,62,62,.08)}
-.color-input{width:32px;height:32px;border:1px solid var(--sidebar-border,#ddd);border-radius:8px;cursor:pointer;padding:0;background:none}
-.brightness-slider{margin-top:8px}
-.slider-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
-.slider-value{color:var(--sidebar-text-secondary,#555)}
-input[type="range"]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e8e5e0;outline:none}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #f5f2ed;box-shadow:0 0 0 1px #ddd}
-.bg-picker-trigger{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,.04);border:1px solid var(--sidebar-border,#ddd);border-radius:8px;cursor:pointer;transition:all .15s}
-.bg-picker-trigger:hover{background:rgba(0,0,0,.07)}
-.trigger-preview{display:flex;gap:4px}
-.trigger-preview span{width:16px;height:16px;border-radius:4px}
-.trigger-text{font-size:12px;color:var(--sidebar-text-secondary,#555)}
-.trigger-arrow{font-size:10px;color:var(--sidebar-text-tertiary,#888);margin-left:auto}
-.bg-presets-panel{max-height:0;overflow:hidden;transition:max-height .3s ease}
-.bg-presets-panel.open{max-height:300px}
-.bg-presets-panel-inner{padding:8px 0}
-.color-presets-group-label{font-size:11px;color:var(--sidebar-text-tertiary,#888);margin:8px 0 4px}
-.color-presets-row{display:flex;flex-wrap:wrap;gap:6px}
-.color-preset-item{width:28px;height:28px;border-radius:6px;cursor:pointer;border:2px solid transparent;transition:border-color .15s;position:relative}
-.color-preset-item:hover{border-color:var(--accent)}
-.color-preset-item.active{border-color:var(--accent)}
-.preset-name{display:none}
+  .menubar-search {
+    position: relative;
+    width: 220px;
+  }
 
-/* === SEARCH DIALOG === */
-.search-dialog{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-start;justify-content:center;padding-top:15vh;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s}
-.search-dialog.active{opacity:1;pointer-events:auto}
-.search-dialog-inner{width:100%;max-width:560px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.search-dialog input{width:100%;padding:16px;border:none;background:transparent;color:var(--text);font-size:16px;outline:none}
-.search-dialog input::placeholder{color:var(--text-tertiary)}
-.search-results{max-height:300px;overflow-y:auto}
-.search-result-item{padding:10px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s}
-.search-result-item:hover,.search-result-item.active{background:var(--surface-hover)}
-.search-result-item img{width:20px;height:20px;border-radius:4px}
-.search-result-item .sr-title{font-size:14px}
-.search-result-item .sr-cat{font-size:11px;color:var(--text-tertiary);margin-left:auto}
-.search-empty{padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px}
+  .menubar-search input {
+    width: 100%;
+    padding: 6px 12px 6px 30px;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.03);
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--text);
+    outline: none;
+    transition: var(--transition);
+  }
 
-/* === SCROLLBAR === */
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text-tertiary)}
+  .menubar-search input:focus {
+    background: #fff;
+    border-color: rgba(0,122,255,0.4);
+    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
+    width: 280px;
+  }
+
+  .menubar-search svg {
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 13px;
+    height: 13px;
+    color: var(--text-secondary);
+  }
+
+  .menubar-time {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Main Content */
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* Quick Launch - Dock Style */
+  .dock {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    background: var(--card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    border: 0.5px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .dock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px 6px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    transition: var(--transition);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .dock-item:hover {
+    background: rgba(0,0,0,0.04);
+    transform: translateY(-2px) scale(1.05);
+  }
+
+  .dock-item:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .dock-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #e8e8ed, #d2d2d7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 0.5px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
+  }
+
+  .dock-icon img {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .dock-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    max-width: 56px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 28px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+
+  .section-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  /* Link Grid */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+  }
+
+  .link-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 10px;
+    border: 0.5px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: var(--transition);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+
+  .link-item:hover {
+    background: var(--card-hover);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+
+  .link-item:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow);
+  }
+
+  .link-favicon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: linear-gradient(145deg, #e8e8ed, #d2d2d7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0.5px 1px rgba(0,0,0,0.08), inset 0 0.5px 0 rgba(255,255,255,0.5);
+    overflow: hidden;
+  }
+
+  .link-favicon img {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+
+  .link-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .link-title {
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .link-desc {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+
+  .link-arrow {
+    color: #c7c7cc;
+    font-size: 14px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: var(--transition);
+  }
+
+  .link-item:hover .link-arrow {
+    opacity: 1;
+    color: var(--text-secondary);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-secondary);
+    font-size: 11px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .content { padding: 20px 16px 48px; }
+    .link-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+    .menubar-search { width: 160px; }
+    .menubar-search input:focus { width: 200px; }
+    .dock { gap: 4px; padding: 12px 14px; }
+    .dock-item { padding: 6px 8px 4px; }
+    .dock-icon { width: 36px; height: 36px; }
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section {
+    animation: fadeInUp 0.4s ease both;
+  }
+
+  .section:nth-child(2) { animation-delay: 0.03s; }
+  .section:nth-child(3) { animation-delay: 0.06s; }
+  .section:nth-child(4) { animation-delay: 0.09s; }
+  .section:nth-child(5) { animation-delay: 0.12s; }
+  .section:nth-child(6) { animation-delay: 0.15s; }
+  .section:nth-child(7) { animation-delay: 0.18s; }
+  .section:nth-child(8) { animation-delay: 0.21s; }
+  .section:nth-child(9) { animation-delay: 0.24s; }
+  .section:nth-child(10) { animation-delay: 0.27s; }
 </style>
 </head>
-<body class="dark">
-<div class="app">
-  <div class="top-bar">
-    <div class="top-bar-left">
-      <span class="site-name" id="siteName">Zenith</span>
-      <span class="mod-key" id="modKey">⌘</span><span style="font-size:11px;color:var(--text-tertiary)">K 搜索</span>
-    </div>
-    <div class="top-bar-right">
-      <button class="icon-btn" id="addCatBtn" aria-label="添加分类" title="添加分类">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/></svg>
-      </button>
-      <button class="icon-btn" id="settingsBtn" aria-label="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-      </button>
-    </div>
+<body>
+
+<div class="menubar">
+  <div class="menubar-title">Zenith</div>
+  <div class="menubar-search">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="6.5" cy="6.5" r="5"/><path d="m11 11 3.5 3.5"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="搜索链接..." oninput="filterLinks()">
   </div>
-  <div class="content-wrapper" id="contentWrapper">
-    <div class="hero" id="heroSection">
-      <h1 id="greeting">Good morning</h1>
-      <p class="desc" id="timeDisplay">00:00</p>
+  <div class="menubar-time" id="clock"></div>
+</div>
+
+<div class="content">
+  <div class="dock" id="dock"></div>
+  <div id="sections"></div>
+</div>
+
+<div class="footer">Zenith Nav · 币圈导航站</div>
+
+<script>
+const DATA = {
+  quickLaunch: [
+    { title: "dexscreener", url: "https://dexscreener.com/", emoji: "📊" },
+    { title: "CMC", url: "https://coinmarketcap.com", emoji: "📈" },
+    { title: "coingecko", url: "https://www.coingecko.com/zh/categories", emoji: "🦎" },
+    { title: "Debank", url: "https://debank.com", emoji: "🏦" },
+    { title: "defillama", url: "https://defillama.com", emoji: "🦙" },
+    { title: "stargate", url: "https://stargate.finance/transfer", emoji: "⭐" },
+    { title: "galxe", url: "https://app.galxe.com/", emoji: "🌌" },
+    { title: "tradingview", url: "https://cn.tradingview.com/chart/", emoji: "📉" },
+    { title: "basescan", url: "https://basescan.org/", emoji: "🔍" },
+    { title: "oklink", url: "https://www.oklink.com/zh-hans/base", emoji: "🔗" },
+  ],
+  categories: [
+    { name: "当下常用", icon: "⭐", color: "#FF9F0A", links: [
+      { title: "三毛机场", url: "https://xn--ehqx7tcnnope.com/#/dashboard" },
+      { title: "性价比机场 - 1元40G", url: "https://xn--6nq44r2uh9rhj7f.com/#/knowledge" },
+      { title: "极速机场 - 一元机场1", url: "https://jsjc.cfd/#/dashboard" },
+      { title: "币安aplana - 空投aplna", url: "https://litangdingzhen.me/" },
+      { title: "hugging - 交易统计分析", url: "https://www.hugging.com/zh/dashboard" },
+      { title: "baalpha - alpha刷分模拟器", url: "https://baalpha.xuemusi.com/" },
+    ]},
+    { name: "网站相关", icon: "🌐", color: "#007AFF", links: [
+      { title: "免费机场", url: "https://github.com/hwanz/SSR-V2ray-Trojan-vpn" },
+      { title: "极速机场 - 12R/y", url: "https://xn--mes358acgm99l.com/#/dashboard" },
+      { title: "赔钱机场 - 2.9R", url: "https://xn--mes358aby2apfg.com/#/plan" },
+      { title: "顶级机场 - 18R/年", url: "https://xn--mes358a9urctx.com/#/dashboard" },
+      { title: "湖北税务", url: "https://etax.hubei.chinatax.gov.cn/portal/" },
+      { title: "xlm云 - 16每年", url: "https://v2.ixlmo.com/index.php#/stage/dashboard" },
+      { title: "极速云 - 10r/m", url: "https://aq.safe301.lol/#/plan" },
+      { title: "辰迅云", url: "https://www.chenxunyun.com/agent/default.asp" },
+      { title: "namesilo - 域名提供商", url: "https://www.namesilo.com/" },
+      { title: "狗云 - 服务器提供商", url: "https://vm.dogyun.com/server/11032/resources" },
+    ]},
+    { name: "币圈导航", icon: "🧭", color: "#30D158", links: [
+      { title: "蚁穴web3", url: "https://antcave.club/" },
+      { title: "dexnav", url: "https://dexnav.com/" },
+      { title: "biquandh", url: "https://www.biquandh.com/" },
+      { title: "0xdh", url: "https://www.0xdh.vip/" },
+      { title: "币百度", url: "https://bibaidu.cn/" },
+      { title: "币圈直通车", url: "https://www.bqztc.com/" },
+      { title: "已火社区", url: "https://www.sihuo.club/" },
+      { title: "链路导航", url: "https://roweb3.com/" },
+      { title: "coinbk", url: "https://coinbk.xyz/" },
+    ]},
+    { name: "杠杆农场", icon: "🌾", color: "#FFD60A", links: [
+      { title: "vfat.io - NO.4聚合农场", url: "https://vfat.io/yield" },
+      { title: "beefy - No.1聚合农场", url: "https://app.beefy.com/" },
+      { title: "harvest - No.3聚合农场", url: "https://app.harvest.finance/farms" },
+      { title: "baklava - NO.2聚合农场", url: "https://baklava.space/vaults/" },
+      { title: "tarot - 多链杠杆农场（主要base)", url: "https://www.tarot.to/" },
+      { title: "zkfox - zk杠杆农场2", url: "https://zkfox.io/#/" },
+      { title: "axly - waves杠杆农场", url: "https://app.axly.io/" },
+      { title: "vivaleva - zkSync杠杆农场", url: "https://vivaleva.com/farm/" },
+      { title: "deltaprime - arb杠杆农场3", url: "https://deltaprime.io/" },
+      { title: "stellaxyz - arb杠杆农场2", url: "https://app.stellaxyz.io/" },
+      { title: "mole - sui杠杆农场", url: "https://app.mole.fi/farm" },
+      { title: "single - arb杠杆农场", url: "https://app.singlefinance.io/farm" },
+      { title: "extrafi - base+op杠杆农场", url: "https://app.extrafi.io/farm" },
+    ]},
+    { name: "Gamefi", icon: "🎮", color: "#BF5AF2", links: [
+      { title: "mobox - 游戏盒子", url: "https://www.mobox.io/#/" },
+    ]},
+    { name: "web3赌场", icon: "🎰", color: "#FF375F", links: [
+      { title: "rollbit", url: "https://rollbit.com/" },
+      { title: "polymarket - 去中心化投注市场", url: "https://polymarket.com/" },
+      { title: "tg.casino", url: "https://www.tg.casino/en" },
+      { title: "luckyblock", url: "https://www.luckyblock.com/en" },
+      { title: "metawin", url: "https://metawin.com/" },
+    ]},
+    { name: "跨链工具", icon: "🔗", color: "#64D2FF", links: [
+      { title: "minibridge", url: "https://minibridge.chaineye.tools/reward" },
+      { title: "debridge - 明牌空投（100p/u)", url: "https://app.debridge.finance/r/14718" },
+      { title: "stargate - NO.1跨链工具", url: "https://stargate.finance/transfer" },
+    ]},
+    { name: "行情查看", icon: "📊", color: "#FF9F0A", links: [
+      { title: "valuescan - 币种分析", url: "https://www.valuescan.io" },
+      { title: "hugging - 合约资产管理", url: "https://www.hugging.com/zh" },
+      { title: "nftsniper - 行情查看", url: "https://www.nftsniper.club" },
+      { title: "market-cap - 市值排名", url: "https://companiesmarketcap.com/assets-by-market-cap" },
+      { title: "looknode - btc数据查看", url: "https://www.looknode.com" },
+      { title: "btc123 - btc历史价格", url: "https://history.btc123.fans" },
+      { title: "VC投资回报", url: "https://dune.com/dyorcrypto/coinlist22" },
+      { title: "coincarp - NO.3币圈行情查看", url: "https://www.coincarp.com/zh" },
+      { title: "coingecko - NO.2行情查看", url: "https://www.coingecko.com/zh/categories" },
+      { title: "CMC - NO.1币圈行情查看", url: "https://coinmarketcap.com" },
+      { title: "tradingview - 全市场行情查看", url: "https://cn.tradingview.com/chart/r0DhubZp/?symbol=BITSTAMP%3ABTCUSD" },
+      { title: "rootdata - NO.1加密项目数据库", url: "https://www.rootdata.com/zh" },
+    ]},
+    { name: "农场导航", icon: "🌱", color: "#30D158", links: [
+      { title: "toupee - NO.4base农场", url: "https://www.toupee.tech" },
+      { title: "tokenterminal - 协议费用查看", url: "https://tokenterminal.com/terminal" },
+      { title: "defillama - NO.1defi查看", url: "https://defillama.com" },
+    ]},
+    { name: "钱包监控", icon: "👁", color: "#5E5CE6", links: [
+      { title: "memego - 聪明钱监控", url: "https://memego.ai" },
+      { title: "blum - 聪明钱包监控", url: "https://www.blum.io/zh" },
+      { title: "metasleuth - 全链聪明钱监控", url: "https://metasleuth.io/plans" },
+      { title: "3dogs - 聪明钱监控", url: "https://3dogs.io/zh-CN" },
+      { title: "trendx - 聪明钱监控", url: "https://app.trendx.tech" },
+      { title: "icrypto - eth聪明钱监控", url: "https://icrypto.ai/zh/ethereum" },
+      { title: "arkham - NO.2EVm钱包监控", url: "https://platform.arkhamintelligence.com" },
+      { title: "notum - EVM系资产看板", url: "https://app.notum.ai" },
+      { title: "dbotx - 功能强大的全链监控工具", url: "https://dbotx.com/dashboard/zh" },
+      { title: "cielo - sol链钱包监控", url: "https://app.cielo.finance/feed" },
+      { title: "gmgn.ai - sol链钱包监控", url: "https://gmgn.ai/?chain=sol" },
+      { title: "degenknows - NFT聪明钱监控", url: "https://www.degenknows.io/smart-traders" },
+      { title: "Debank - evm链监控", url: "https://debank.com/profile/0xd77cb38c3b3261779acc15dcacd54b5db9bcec72" },
+      { title: "diting - evm链监控", url: "https://pc.diting.ai/market?tokenPairAddress=0x6c01242b5e039ab0cd20d7e7e249920fe03c3cfa&chain=arbitrum" },
+    ]},
+    { name: "效率工具", icon: "⚡", color: "#FF9F0A", links: [
+      { title: "checkdrop - 空投检查", url: "https://checkdrop.byzantine.fi" },
+      { title: "0xscope. - 资产看板", url: "https://ai.0xscope.com" },
+      { title: "assetdash - 资产看板", url: "https://members.assetdash.com/portfolio" },
+      { title: "logearn - 跟单交易", url: "https://logearn.com/cn" },
+      { title: "matcha - 全链交易DEX", url: "https://matcha.xyz" },
+      { title: "0xscop - 区块数据浏览", url: "https://scan.0xscope.com/home?network=base" },
+      { title: "dbotx - NO.2快速交易", url: "https://dbotx.com/zh" },
+      { title: "cpbox - 批量工具", url: "https://www.cpbox.io/cn" },
+      { title: "hacked.slowmist - 被黑统计", url: "https://hacked.slowmist.io" },
+      { title: "coindar - 币圈日历", url: "https://coindar.org/zh-cn" },
+      { title: "token.unlocks - 代币解锁时间表", url: "https://token.unlocks.app" },
+      { title: "cointool.app - 批量操作工具", url: "https://cointool.app/multiSender/eth" },
+      { title: "mct - 科学家工具", url: "https://mct.xyz" },
+    ]},
+    { name: "SOL生态", icon: "◎", color: "#9945FF", links: [
+      { title: "ape.pro - sol交易工具", url: "https://ape.pro" },
+      { title: "pump.fun - sol发射器", url: "https://pump.fun/board" },
+      { title: "hellomoon - sol生态查看", url: "https://www.hellomoon.io/solana" },
+      { title: "hawksight - sol收益聚合", url: "https://www.hawksight.co/strategies" },
+      { title: "1intro - 预售平台", url: "https://app.1intro.com/1lbp" },
+      { title: "solsale - 预售平台2", url: "https://solsale.app/presale/all" },
+      { title: "gempad - 预售平台1", url: "https://gempad.app/presale/all" },
+      { title: "birdeye - sol行情查看+钱包监控", url: "https://birdeye.so/user/profile" },
+      { title: "solana - sol生态合集", url: "https://solana.com/zh" },
+    ]},
+    { name: "sui生态", icon: "💧", color: "#4DA2FF", links: [
+      { title: "flameswap - NO.5DEX", url: "https://flameswap.io/#/farm" },
+      { title: "bluemove - NO.4DEX", url: "https://dex.bluemove.net/farms" },
+      { title: "flowx - NO.3DEX", url: "https://flowx.finance/faas" },
+      { title: "cetus - NO.2DEX", url: "https://app.cetus.zone" },
+      { title: "turbos - NO.1DEX", url: "https://app.turbos.finance/#/pools" },
+    ]},
+    { name: "blast生态", icon: "💥", color: "#FF6B35", links: [
+      { title: "gamma", url: "https://app.gamma.xyz" },
+    ]},
+    { name: "ICO+IDO", icon: "🚀", color: "#FF375F", links: [
+      { title: "chainbroker - ido3", url: "https://chainbroker.io" },
+      { title: "cryptorank - ico1", url: "https://cryptorank.io/ico" },
+      { title: "icoanalytics - ico5", url: "https://icoanalytics.org/stats" },
+    ]},
+    { name: "新池查看", icon: "🏊", color: "#64D2FF", links: [
+      { title: "dex.guru - 流动池查看", url: "https://dex.guru/markets" },
+      { title: "avedex - NO.4新池查看", url: "https://avedex.cc/home" },
+      { title: "apeoclock - NO.3新池查看", url: "https://www.apeoclock.com/calls" },
+      { title: "dextools - NO.2新池", url: "https://www.dextools.io/app/cn/pairs" },
+      { title: "dexscreener - NO.1新池", url: "https://dexscreener.com" },
+    ]},
+    { name: "base生态", icon: "🔵", color: "#0052FF", links: [
+      { title: "carbondefi - 交易策略", url: "https://www.carbondefi.xyz/zh/networks#base" },
+      { title: "infusion - NO.6base链DEX", url: "https://infusion.finance" },
+      { title: "oklink - 全链浏览器", url: "https://www.oklink.com/zh-hans/base" },
+      { title: "basescan.org - base官方浏览器", url: "https://basescan.org/tokens" },
+      { title: "l2beat - L2链数据查看", url: "https://l2beat.com" },
+      { title: "base.blockscout - 区块浏览器", url: "https://base.blockscout.com" },
+    ]},
+  ]
+};
+
+function getFavicon(url) {
+  try { return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; }
+  catch { return ''; }
+}
+
+function getDomain(url) {
+  try { return new URL(url).hostname.replace('www.',''); }
+  catch { return url; }
+}
+
+function render() {
+  // Dock
+  const dock = document.getElementById('dock');
+  dock.innerHTML = DATA.quickLaunch.map(item => `
+    <a class="dock-item" href="${item.url}" target="_blank" rel="noopener">
+      <div class="dock-icon">
+        <img src="${getFavicon(item.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.emoji}'">
+      </div>
+      <div class="dock-label">${item.title}</div>
+    </a>
+  `).join('');
+
+  // Sections
+  const sections = document.getElementById('sections');
+  sections.innerHTML = DATA.categories.map(cat => `
+    <div class="section" data-category="${cat.name}">
+      <div class="section-header">
+        <div class="section-icon" style="background:${cat.color}15;color:${cat.color}">${cat.icon}</div>
+        <div class="section-title">${cat.name}</div>
+        <div class="section-count">${cat.links.length}</div>
+      </div>
+      <div class="link-grid">
+        ${cat.links.map(link => `
+          <a class="link-item" href="${link.url}" target="_blank" rel="noopener">
+            <div class="link-favicon">
+              <img src="${getFavicon(link.url)}" alt="" onerror="this.style.display='none'">
+            </div>
+            <div class="link-info">
+              <div class="link-title">${link.title}</div>
+              <div class="link-desc">${getDomain(link.url)}</div>
+            </div>
+            <div class="link-arrow">›</div>
+          </a>
+        `).join('')}
+      </div>
     </div>
-    <div class="search-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" placeholder="Search bookmarks...
+  `).join('');
+}
+
+function filterLinks() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.section').forEach(sec => {
+    const items = sec.querySelectorAll('.link-item');
+    let visible = 0;
+    items.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      const show = !q || text.includes(q);
+      item.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+
+function updateClock() {
+  const now = new Date();
+  const opts = { month: 'short', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' };
+  document.getElementById('clock').textContent = now.toLocaleString('zh-CN', opts);
+}
+
+render();
+updateClock();
+setInterval(updateClock, 10000);
+</script>
+</body>
+</html>
