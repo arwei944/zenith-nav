@@ -13,24 +13,27 @@ jobs:
       - name: Deploy to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO: arwei944/zenith-nav
         run: |
           pip install huggingface_hub
-          python3 << 'PYEOF'
-          from huggingface_hub import HfApi
-          import os
 
-          api = HfApi()
-          repo_id = "arwei944/zenith-nav"
-
-          api.create_repo(repo_id=repo_id, repo_type="space", space_sdk="static", private=False, exist_ok=True)
-
-          # Upload entire folder
-          api.upload_folder(
-              folder_path=".",
-              repo_id=repo_id,
-              repo_type="space",
-              ignore_patterns=[".git/*", ".github/*", "*.txt"],
-              delete_patterns=["style.css", "icons.svg"],
-          )
-          print("Deploy complete!")
-          PYEOF
+          # Upload each file individually using curl
+          echo "=== Deploying to HuggingFace Space ==="
+          
+          for file in $(find . -type f \
+            -not -path './.git/*' \
+            -not -path './.github/*' \
+            -not -name '*.txt' \
+            | sort); do
+            
+            repo_path="${file#./}"
+            echo "Uploading: $repo_path ($(wc -c < "$file") bytes)"
+            
+            curl -s -X PUT \
+              "https://huggingface.co/api/spaces/$HF_REPO/upload/$repo_path" \
+              -H "Authorization: Bearer $HF_TOKEN" \
+              --data-binary "@$file" \
+              -o /dev/null -w "HTTP %{http_code}\n"
+          done
+          
+          echo "=== Deploy complete ==="
