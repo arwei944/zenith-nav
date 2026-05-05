@@ -2,7 +2,6 @@ name: Deploy to HF Space
 on:
   push:
     branches: [main]
-    paths: ['preview.html']
   workflow_dispatch:
 
 jobs:
@@ -18,8 +17,29 @@ jobs:
           pip install huggingface_hub
           python3 -c "
           from huggingface_hub import HfApi
+          import os, glob
+
           api = HfApi()
           api.create_repo(repo_id='arwei944/zenith-nav', repo_type='space', space_sdk='static', private=False, exist_ok=True)
-          api.upload_file(path_or_fileobj='preview.html', path_in_repo='index.html', repo_id='arwei944/zenith-nav', repo_type='space')
+
+          # Delete old files that no longer exist
+          for old_file in ['style.css', 'README.md']:
+              try:
+                  api.delete_file(path_in_repo=old_file, repo_id='arwei944/zenith-nav', repo_type='space')
+                  print(f'Deleted {old_file}')
+              except:
+                  pass
+
+          # Upload all files
+          for root, dirs, files in os.walk('.'):
+              if '.git' in root or '.github' in root:
+                  continue
+              # Skip Next.js meta files
+              files = [f for f in files if not f.endswith('.txt')]
+              for file in files:
+                  file_path = os.path.join(root, file)
+                  repo_path = file_path.lstrip('./')
+                  print(f'Uploading {file_path} -> {repo_path}')
+                  api.upload_file(path_or_fileobj=file_path, path_in_repo=repo_path, repo_id='arwei944/zenith-nav', repo_type='space')
+          print('Done!')
           "
-          echo "Deployed $(wc -c < preview.html) bytes to HF Space"
