@@ -171,10 +171,72 @@
     text-align: center;
   }
 
-  /* Section */
-  .section {
-    margin-bottom: 28px;
+  /* Tab Bar */
+  .tab-bar {
+    display: flex;
+    gap: 2px;
+    padding: 4px;
+    margin-bottom: 24px;
+    background: rgba(0,0,0,0.03);
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tab-bar::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tab-btn:hover {
+    background: rgba(0,0,0,0.04);
+    color: var(--text);
+  }
+
+  .tab-btn.active {
+    background: #fff;
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0.5px 0 rgba(0,0,0,0.04);
+  }
+
+  .tab-btn .tab-emoji {
+    font-size: 12px;
+  }
+
+  .tab-btn .tab-count {
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: rgba(0,0,0,0.04);
+    padding: 1px 5px;
+    border-radius: 6px;
+    font-weight: 400;
+  }
+
+  .tab-btn.active .tab-count {
+    background: rgba(0,0,0,0.06);
+  }
+
+  /* Tab Content */
+  .tab-panel {
+    display: none;
+    animation: fadeIn 0.25s ease;
+  }
+  .tab-panel.active { display: block; }
 
   .section-header {
     display: flex;
@@ -205,6 +267,11 @@
     font-size: 11px;
     color: var(--text-secondary);
     font-weight: 400;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   /* Link Grid */
@@ -324,26 +391,6 @@
     .dock-item { padding: 6px 8px 4px; }
     .dock-icon { width: 36px; height: 36px; }
   }
-
-  /* Animations */
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .section {
-    animation: fadeInUp 0.4s ease both;
-  }
-
-  .section:nth-child(2) { animation-delay: 0.03s; }
-  .section:nth-child(3) { animation-delay: 0.06s; }
-  .section:nth-child(4) { animation-delay: 0.09s; }
-  .section:nth-child(5) { animation-delay: 0.12s; }
-  .section:nth-child(6) { animation-delay: 0.15s; }
-  .section:nth-child(7) { animation-delay: 0.18s; }
-  .section:nth-child(8) { animation-delay: 0.21s; }
-  .section:nth-child(9) { animation-delay: 0.24s; }
-  .section:nth-child(10) { animation-delay: 0.27s; }
 </style>
 </head>
 <body>
@@ -361,7 +408,8 @@
 
 <div class="content">
   <div class="dock" id="dock"></div>
-  <div id="sections"></div>
+  <div class="tab-bar" id="tabBar"></div>
+  <div id="tabPanels"></div>
 </div>
 
 <div class="footer">Zenith Nav · 币圈导航站</div>
@@ -558,14 +606,24 @@ function render() {
     </a>
   `).join('');
 
-  // Sections
-  const sections = document.getElementById('sections');
-  sections.innerHTML = DATA.categories.map(cat => `
-    <div class="section" data-category="${cat.name}">
+  // Tab Bar
+  const tabBar = document.getElementById('tabBar');
+  tabBar.innerHTML = DATA.categories.map((cat, i) => `
+    <button class="tab-btn${i===0?' active':''}" onclick="switchTab(${i})">
+      <span class="tab-emoji">${cat.icon}</span>
+      ${cat.name}
+      <span class="tab-count">${cat.links.length}</span>
+    </button>
+  `).join('');
+
+  // Tab Panels
+  const panels = document.getElementById('tabPanels');
+  panels.innerHTML = DATA.categories.map((cat, i) => `
+    <div class="tab-panel${i===0?' active':''}" id="panel-${i}">
       <div class="section-header">
         <div class="section-icon" style="background:${cat.color}15;color:${cat.color}">${cat.icon}</div>
         <div class="section-title">${cat.name}</div>
-        <div class="section-count">${cat.links.length}</div>
+        <div class="section-count">${cat.links.length} 个链接</div>
       </div>
       <div class="link-grid">
         ${cat.links.map(link => `
@@ -585,19 +643,39 @@ function render() {
   `).join('');
 }
 
+function switchTab(index) {
+  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.tab-panel').forEach((panel, i) => {
+    panel.classList.toggle('active', i === index);
+  });
+}
+
 function filterLinks() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  document.querySelectorAll('.section').forEach(sec => {
-    const items = sec.querySelectorAll('.link-item');
+  if (!q) {
+    // Reset: show first tab
+    switchTab(0);
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.style.display = '');
+    return;
+  }
+  // Show all panels, filter items
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('active'));
+  document.querySelectorAll('.tab-panel').forEach(panel => {
+    const items = panel.querySelectorAll('.link-item');
     let visible = 0;
     items.forEach(item => {
       const text = item.textContent.toLowerCase();
-      const show = !q || text.includes(q);
+      const show = text.includes(q);
       item.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-    sec.style.display = visible ? '' : 'none';
+    panel.style.display = visible ? '' : 'none';
   });
+  // Hide tab bar during search
+  document.getElementById('tabBar').style.display = 'none';
+  if (!q) document.getElementById('tabBar').style.display = '';
 }
 
 function updateClock() {
