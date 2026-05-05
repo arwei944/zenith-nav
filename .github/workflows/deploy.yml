@@ -17,23 +17,43 @@ jobs:
         run: |
           pip install huggingface_hub
 
-          # Upload each file individually using curl
           echo "=== Deploying to HuggingFace Space ==="
           
-          for file in $(find . -type f \
-            -not -path './.git/*' \
-            -not -path './.github/*' \
-            -not -name '*.txt' \
-            | sort); do
-            
-            repo_path="${file#./}"
-            echo "Uploading: $repo_path ($(wc -c < "$file") bytes)"
-            
-            curl -s -X PUT \
-              "https://huggingface.co/api/spaces/$HF_REPO/upload/$repo_path" \
-              -H "Authorization: Bearer $HF_TOKEN" \
-              --data-binary "@$file" \
-              -o /dev/null -w "HTTP %{http_code}\n"
-          done
+          python3 << 'PYEOF'
+          import os
+          from huggingface_hub import HfApi
           
-          echo "=== Deploy complete ==="
+          api = HfApi()
+          repo_id = os.environ["HF_REPO"]
+          
+          # Delete unwanted files
+          for f in ["style.css", "test.txt", "icons.svg"]:
+              try:
+                  api.delete_file(path_in_repo=f, repo_id=repo_id, repo_type="space", commit_message=f"Remove {f}")
+                  print(f"Deleted {f}")
+              except:
+                  pass
+          
+          # Upload all files
+          uploaded = 0
+          for root, dirs, files in os.walk("."):
+              if ".git" in root or ".github" in root:
+                  continue
+              for fname in files:
+                  if fname.endswith(".txt"):
+                      continue
+                  fpath = os.path.join(root, fname)
+                  repo_path = fpath.lstrip("./")
+                  with open(fpath, "rb") as fobj:
+                      api.upload_file(
+                          path_or_fileobj=fobj,
+                          path_in_repo=repo_path,
+                          repo_id=repo_id,
+                          repo_type="space",
+                          commit_message=f"Upload {repo_path}"
+                      )
+                  print(f"Uploaded {repo_path} ({os.path.getsize(fpath)} bytes)")
+                  uploaded += 1
+          
+          print(f"\n=== Done! {uploaded} files uploaded ===")
+          PYEOF
