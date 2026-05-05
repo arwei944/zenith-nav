@@ -26,15 +26,27 @@ jobs:
           api = HfApi()
           repo_id = os.environ["HF_REPO"]
           
-          # Delete unwanted files
-          for f in ["style.css", "test.txt", "icons.svg"]:
-              try:
-                  api.delete_file(path_in_repo=f, repo_id=repo_id, repo_type="space", commit_message=f"Remove {f}")
-                  print(f"Deleted {f}")
-              except:
-                  pass
+          # Files to keep (only these will exist on HF Space)
+          keep_files = {"preview.html", "README.md", ".gitattributes"}
           
-          # Upload all files
+          # Delete all unwanted files from HF Space
+          try:
+              from huggingface_hub import HfFileSystem
+              fs = HfFileSystem()
+              existing = set(fs.ls(repo_id, detail=False))
+              for f in existing:
+                  fname = f.split("/")[-1] if "/" not in f else f
+                  # Delete top-level files not in keep list, and all _next/ dirs
+                  if fname not in keep_files or f.startswith("_next") or f.startswith("_not-found") or f == "404.html":
+                      try:
+                          api.delete_file(path_in_repo=f, repo_id=repo_id, repo_type="space", commit_message=f"Remove {f}")
+                          print(f"Deleted {f}")
+                      except:
+                          pass
+          except Exception as e:
+              print(f"Cleanup error: {e}")
+          
+          # Upload all files from repo
           uploaded = 0
           for root, dirs, files in os.walk("."):
               if ".git" in root or ".github" in root:
