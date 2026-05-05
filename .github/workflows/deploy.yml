@@ -67,5 +67,18 @@ jobs:
                   print(f"Uploaded {repo_path} ({os.path.getsize(fpath)} bytes)")
                   uploaded += 1
           
+          # Copy preview.html as index.html (HF Static Space loads index.html)
+          if os.path.exists("preview.html"):
+              with open("preview.html", "rb") as fobj:
+                  api.upload_file(
+                      path_or_fileobj=fobj,
+                      path_in_repo="index.html",
+                      repo_id=repo_id,
+                      repo_type="space",
+                      commit_message="Copy preview.html to index.html"
+                  )
+              print("Copied preview.html -> index.html")
+              uploaded += 1
+          
           print(f"\n=== Done! {uploaded} files uploaded ===")
           PYEOF
