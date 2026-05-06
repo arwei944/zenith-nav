@@ -334,8 +334,35 @@ img{display:block}
 // ========== Data ==========
 const COLORS=['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#64D2FF','#FF6482','#5AC8FA','#FFD60A','#32D74B','#BF5AF2'];
 function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORS[Math.abs(h)%COLORS.length]}
-function getFavicon(u){try{return'https://www.google.com/s2/favicons?domain='+new URL(u).hostname+'&sz=128'}catch{return''}}
 function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{return u}}
+
+// ========== Multi-source Favicon ==========
+function getFaviconSources(url){
+  try{
+    const d=new URL(url).hostname;
+    return [
+      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://'+d+'&size=128',
+      'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
+      'https://icons.duckduckgo.com/ip3/'+d+'.ico',
+      url.replace(/\/.*$/,'')+'/favicon.ico',
+    ];
+  }catch{return[]}
+}
+function getFavicon(u){const s=getFaviconSources(u);return s.length?s[0]:''}
+function faviconImg(url, fallback){
+  const sources=getFaviconSources(url).map(s=>"'"+s+"'").join(',');
+  return '<img src="'+getFavicon(url)+'" alt="" data-fallback="'+fallback+'" data-sources="['+sources+']" onerror="faviconFallback(this)">';
+}
+function faviconFallback(img){
+  try{
+    const sources=JSON.parse(img.dataset.sources||'[]');
+    const current=img.src.replace(/^https?:/,'https:');
+    const idx=sources.findIndex(s=>s.replace(/^https?:/,'https:')===current);
+    if(idx>=0&&idx<sources.length-1){img.src=sources[idx+1];return}
+    img.style.display='none';
+    img.parentElement.textContent=img.dataset.fallback||'?';
+  }catch{img.style.display='none';img.parentElement.textContent='?'}
+}
 
 const DATA={
   dock:[
@@ -461,9 +488,6 @@ const DATA={
 };
 
 // ========== Helpers ==========
-function faviconImg(url, fallback){
-  return '<img src="'+getFavicon(url)+'" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\''+fallback+'\'">';
-}
 function getAllLinks(){
   const all=[];
   DATA.folders.forEach(f=>f.links.forEach(l=>all.push({...l,folder:f.name,folderIcon:f.icon})));
