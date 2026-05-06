@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # 获取上一个标签
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          
+          if [ -z "$PREVIOUS_TAG" ]; then
+            # 如果没有上一个标签，获取所有提交
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # 获取两个标签之间的提交
+            CHANGELOG=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # 分类提交
+          FEATURES=$(echo "$CHANGELOG" | grep "^\- feat" || echo "")
+          FIXES=$(echo "$CHANGELOG" | grep "^\- fix" || echo "")
+          DOCS=$(echo "$CHANGELOG" | grep "^\- docs" || echo "")
+          OTHERS=$(echo "$CHANGELOG" | grep -v "^\- feat" | grep -v "^\- fix" | grep -v "^\- docs" || echo "")
+          
+          # 构建发布说明
+          RELEASE_BODY="## 更新内容\n\n"
+          
+          if [ -n "$FEATURES" ]; then
+            RELEASE_BODY="${RELEASE_BODY}### ✨ 新功能\n${FEATURES}\n\n"
+          fi
+          
+          if [ -n "$FIXES" ]; then
+            RELEASE_BODY="${RELEASE_BODY}### 🐛 Bug 修复\n${FIXES}\n\n"
+          fi
+          
+          if [ -n "$DOCS" ]; then
+            RELEASE_BODY="${RELEASE_BODY}### 📚 文档更新\n${DOCS}\n\n"
+          fi
+          
+          if [ -n "$OTHERS" ]; then
+            RELEASE_BODY="${RELEASE_BODY}### 🔧 其他变更\n${OTHERS}\n\n"
+          fi
+          
+          RELEASE_BODY="${RELEASE_BODY}---\n\n[查看完整提交历史](https://github.com/${{ github.repository }}/commits/${{ github.ref_name }})"
+          
+          # 输出到文件
+          echo "$RELEASE_BODY" > RELEASE_NOTES.md
+          cat RELEASE_NOTES.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: RELEASE_NOTES.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
