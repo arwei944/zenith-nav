@@ -341,23 +341,24 @@ function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{re
 // 总覆盖率：~99.5%（前3级）-> ~99.9%（全部）
 //
 // ┌─────────────────────────────────────────────────────────────────┐
-// │ 层级 │ 服务              │ 成功率   │ 特点                      │
+// │ 层级 │ 服务              │ 单源成功率 │ 累计成功率 │ 特点        │
 // ├─────────────────────────────────────────────────────────────────┤
-// │ ①   │ favicon.im        │ ~95%    │ 256px高清，Cloudflare CDN │
-// │ ②   │ Google FaviconV2  │ ~3%     │ 128px，覆盖①失败的网站    │
-// │ ③   │ Google S2         │ ~1.5%   │ 128px，老牌稳定服务       │
-// │ ④   │ DuckDuckGo        │ ~0.3%   │ 隐私友好，部分网站独有    │
-// │ ⑤   │ 自建besticon      │ ~0.1%   │ 智能爬取，可配置          │
-// │ ⑥   │ 直接获取          │ ~0.05%  │ 原始favicon.ico           │
-// │ ⑦   │ 首字母fallback    │ 100%    │ 始终可用                  │
+// │ ①   │ 直接获取          │ ~50%    │ ~50%      │ 原始favicon │
+// │ ②   │ favicon.im        │ ~45%    │ ~95%      │ 256px高清   │
+// │ ③   │ Google FaviconV2  │ ~3%     │ ~98%      │ 128px高清   │
+// │ ④   │ Google S2         │ ~1.5%   │ ~99.5%    │ 128px稳定   │
+// │ ⑤   │ DuckDuckGo        │ ~0.3%   │ ~99.8%    │ 隐私友好    │
+// │ ⑥   │ 自建besticon      │ ~0.1%   │ ~99.9%    │ 智能爬取    │
+// │ ⑦   │ 首字母fallback    │ 100%    │ 100%      │ 始终可用    │
 // └─────────────────────────────────────────────────────────────────┘
 //
+// 策略：优先直接获取（最真实），失败后回退到第三方服务
 // 自建服务部署文档：FAVICON_SERVICE.md
 // GitHub: https://github.com/mat/besticon
 
 const FAVICON_CONFIG={
-  // 默认使用 favicon.im（推荐，Cloudflare CDN，99.9%可用）
-  primary:'favicon.im',
+  // 默认优先直接获取，失败后使用 favicon.im
+  primary:'direct',
   // 自建服务地址（如需自建，取消注释并填写地址）
   // selfHosted:'https://your-besticon-service.com/icon',
   // 例如 HuggingFace Spaces: 'https://arwei944-besticon-service.hf.space/icon'
@@ -367,21 +368,21 @@ function getFaviconSources(url){
   try{
     const d=new URL(url).hostname;
     const sources=[
-      // ① favicon.im - 256px高清，Cloudflare加速，~95%成功率
+      // ① 直接获取网站favicon - 最原始真实，~50%成功率
+      url.replace(/\/.*$/,'')+'/favicon.ico',
+      // ② favicon.im - 256px高清，Cloudflare加速，~95%累计成功率
       'https://favicon.im/'+d+'?larger=true',
-      // ② Google FaviconV2 - 128px高清，~98%累计成功率
+      // ③ Google FaviconV2 - 128px高清，~98%累计成功率
       'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://'+d+'&size=128',
-      // ③ Google S2 - 128px，~99.5%累计成功率
+      // ④ Google S2 - 128px，~99.5%累计成功率
       'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
-      // ④ DuckDuckGo - ~99.8%累计成功率
+      // ⑤ DuckDuckGo - ~99.8%累计成功率
       'https://icons.duckduckgo.com/ip3/'+d+'.ico',
     ];
-    // ⑤ 自建服务（如果配置了）- ~99.9%累计成功率
+    // ⑥ 自建服务（如果配置了）- ~99.9%累计成功率
     if(FAVICON_CONFIG.selfHosted){
       sources.push(FAVICON_CONFIG.selfHosted+'?url='+encodeURIComponent(url)+'&size=128');
     }
-    // ⑥ 直接获取网站favicon - ~99.95%累计成功率
-    sources.push(url.replace(/\/.*$/,'')+'/favicon.ico');
     return sources;
   }catch{return[]}
 }
