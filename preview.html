@@ -394,12 +394,18 @@ function faviconImg(url, fallback){
 function faviconFallback(img){
   try{
     const sources=JSON.parse(img.dataset.sources||'[]');
-    const current=img.src.replace(/^https?:/,'https:');
-    const idx=sources.findIndex(s=>s.replace(/^https?:/,'https:')===current);
-    if(idx>=0&&idx<sources.length-1){img.src=sources[idx+1];return}
+    const current=img.src;
+    const idx=sources.findIndex(s=>s===current);
+    if(idx>=0&&idx<sources.length-1){
+      img.src=sources[idx+1];
+      return;
+    }
     img.style.display='none';
     img.parentElement.textContent=img.dataset.fallback||'?';
-  }catch{img.style.display='none';img.parentElement.textContent='?'}
+  }catch(e){
+    img.style.display='none';
+    img.parentElement.textContent=img.dataset.fallback||'?';
+  }
 }
 
 const DATA={
