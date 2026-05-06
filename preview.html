@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Zenith Nav - Workspace</title>
+<title>Zenith Nav</title>
 <style>
 /* ========== Reset & Base ========== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -18,72 +18,12 @@ body{
   -webkit-user-select:none;
 }
 
-/* ========== Shared Utilities ========== */
 :root{
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
-  --switcher-h:52px;
 }
 a{color:inherit;text-decoration:none}
 img{display:block}
-
-/* ========== Top Switcher Bar ========== */
-.style-switcher{
-  position:fixed;
-  top:0;left:0;right:0;
-  height:var(--switcher-h);
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  padding:0 12px;
-  background:rgba(15,15,20,0.82);
-  backdrop-filter:blur(30px) saturate(180%);
-  -webkit-backdrop-filter:blur(30px) saturate(180%);
-  border-bottom:0.5px solid rgba(255,255,255,0.08);
-}
-.switcher-btn{
-  padding:6px 14px;
-  border-radius:18px;
-  border:none;
-  background:transparent;
-  color:rgba(255,255,255,0.55);
-  font-size:13px;
-  font-weight:500;
-  font-family:inherit;
-  cursor:pointer;
-  transition:all 0.25s ease;
-  white-space:nowrap;
-}
-.switcher-btn:hover{color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.06)}
-.switcher-btn.active{
-  color:#fff;
-  background:rgba(255,255,255,0.14);
-  box-shadow:0 0 0 0.5px rgba(255,255,255,0.12);
-}
-
-/* ========== Workspace Container ========== */
-.workspace{
-  position:fixed;
-  top:var(--switcher-h);
-  left:0;right:0;bottom:0;
-  overflow:hidden;
-}
-.ws-view{
-  position:absolute;
-  inset:0;
-  opacity:0;
-  transform:scale(0.97) translateY(8px);
-  transition:opacity 0.35s ease, transform 0.35s ease;
-  pointer-events:none;
-  overflow:hidden;
-}
-.ws-view.active{
-  opacity:1;
-  transform:scale(1) translateY(0);
-  pointer-events:auto;
-}
 
 /* ========== Wallpaper ========== */
 .wallpaper{
@@ -96,189 +36,15 @@ img{display:block}
     linear-gradient(180deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#533483 100%);
 }
 
-/* ================================================================
-   STYLE 1: iOS Control Center
-   ================================================================ */
-.cc-view{
-  background:transparent;
-  display:flex;
-  flex-direction:column;
-  height:100%;
-}
-.cc-search{
-  padding:12px 16px 8px;
-  flex-shrink:0;
-}
-.cc-search input{
-  width:100%;
-  padding:10px 16px 10px 38px;
-  border:none;
-  border-radius:12px;
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  color:#fff;
-  font-size:15px;
-  font-family:inherit;
-  outline:none;
-  transition:background 0.2s;
-}
-.cc-search input:focus{background:rgba(255,255,255,0.16)}
-.cc-search input::placeholder{color:rgba(255,255,255,0.35)}
-.cc-search-wrap{
-  position:relative;
-}
-.cc-search-wrap svg{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;color:rgba(255,255,255,0.4);
-}
-.cc-grid-wrap{
-  flex:1;
-  overflow-y:auto;
-  padding:8px 16px 16px;
-  scrollbar-width:none;
-}
-.cc-grid-wrap::-webkit-scrollbar{display:none}
-.cc-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-@media(min-width:600px){.cc-grid{grid-template-columns:repeat(4,1fr)}}
-@media(min-width:900px){.cc-grid{grid-template-columns:repeat(5,1fr)}}
-
-.cc-tile{
-  aspect-ratio:1;
-  border-radius:20px;
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(25px) saturate(160%);
-  -webkit-backdrop-filter:blur(25px) saturate(160%);
-  border:0.5px solid rgba(255,255,255,0.1);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  cursor:pointer;
-  transition:transform 0.15s,background 0.2s;
-  position:relative;
-  overflow:hidden;
-}
-.cc-tile::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 50%);
-  pointer-events:none;
-}
-.cc-tile:active{transform:scale(0.93);background:rgba(255,255,255,0.15)}
-.cc-tile-icon{font-size:32px}
-.cc-tile-name{font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);text-align:center;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cc-tile-count{font-size:10px;color:rgba(255,255,255,0.4)}
-
-/* CC Expanded Panel */
-.cc-panel-overlay{
-  position:fixed;inset:0;z-index:5000;
-  display:none;opacity:0;
-  transition:opacity 0.25s;
-}
-.cc-panel-overlay.open{display:block;opacity:1}
-.cc-panel-backdrop{
-  position:absolute;inset:0;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(15px);
-  -webkit-backdrop-filter:blur(15px);
-}
-.cc-panel{
-  position:absolute;
-  left:50%;top:50%;
-  transform:translate(-50%,-50%) scale(0.9);
-  width:min(420px,92vw);
-  max-height:70vh;
-  background:rgba(40,40,50,0.85);
-  backdrop-filter:blur(50px) saturate(200%);
-  -webkit-backdrop-filter:blur(50px) saturate(200%);
-  border-radius:24px;
-  border:0.5px solid rgba(255,255,255,0.1);
-  box-shadow:0 25px 80px rgba(0,0,0,0.5);
-  padding:20px;
-  overflow-y:auto;
-  scrollbar-width:none;
-  transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
-}
-.cc-panel-overlay.open .cc-panel{transform:translate(-50%,-50%) scale(1)}
-.cc-panel::-webkit-scrollbar{display:none}
-.cc-panel-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:16px;
-}
-.cc-panel-title{font-size:18px;font-weight:600}
-.cc-panel-close{
-  width:28px;height:28px;border-radius:50%;
-  background:rgba(255,255,255,0.12);
-  border:none;color:#fff;font-size:16px;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background 0.15s;
-}
-.cc-panel-close:hover{background:rgba(255,255,255,0.2)}
-.cc-link-list{display:flex;flex-direction:column;gap:4px}
-.cc-link-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 12px;border-radius:12px;
-  transition:background 0.15s;cursor:pointer;
-}
-.cc-link-item:hover{background:rgba(255,255,255,0.08)}
-.cc-link-item:active{background:rgba(255,255,255,0.12)}
-.cc-link-favicon{
-  width:32px;height:32px;border-radius:8px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:600;
-  box-shadow:0 1px 4px rgba(0,0,0,0.2);
-  overflow:hidden;
-}
-.cc-link-favicon img{width:100%;height:100%;object-fit:cover;border-radius:8px}
-.cc-link-info{flex:1;min-width:0}
-.cc-link-title{font-size:15px;font-weight:400}
-.cc-link-domain{font-size:12px;color:rgba(255,255,255,0.4);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* CC Dock */
-.cc-dock{
-  flex-shrink:0;
-  padding:8px 16px calc(12px + var(--safe-bottom));
-}
-.cc-dock-inner{
-  display:flex;gap:12px;
-  padding:10px 14px;
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(30px) saturate(180%);
-  -webkit-backdrop-filter:blur(30px) saturate(180%);
-  border-radius:24px;
-  border:0.5px solid rgba(255,255,255,0.08);
-  overflow-x:auto;
-  scrollbar-width:none;
-  justify-content:center;
-}
-.cc-dock-inner::-webkit-scrollbar{display:none}
-.cc-dock-item{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  cursor:pointer;flex-shrink:0;
-  transition:transform 0.12s;
-}
-.cc-dock-item:active{transform:scale(0.88)}
-.cc-dock-icon{
-  width:44px;height:44px;border-radius:11px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;overflow:hidden;
-  box-shadow:0 2px 8px rgba(0,0,0,0.25);
-}
-.cc-dock-icon img{width:100%;height:100%;object-fit:cover}
-.cc-dock-label{font-size:10px;color:rgba(255,255,255,0.7);max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* ================================================================
-   STYLE 2: macOS Menu Bar
-   ================================================================ */
+/* ========== macOS Layout ========== */
 .macos-view{
-  display:flex;flex-direction:column;height:100%;
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
   background:rgba(30,30,35,0.95);
+  z-index:1;
 }
+
+/* Menu Bar */
 .macos-menubar{
   height:28px;flex-shrink:0;
   display:flex;align-items:center;
@@ -295,6 +61,7 @@ img{display:block}
 .macos-menubar-item:hover{color:#fff}
 .macos-menubar-right{margin-left:auto;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.6);font-size:12px}
 
+/* Body */
 .macos-body{
   flex:1;display:flex;overflow:hidden;
 }
@@ -393,7 +160,7 @@ img{display:block}
 .macos-card-title{font-size:13px;font-weight:500}
 .macos-card-domain{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* macOS Dock */
+/* Dock */
 .macos-dock{
   flex-shrink:0;
   padding:6px 16px calc(8px + var(--safe-bottom));
@@ -422,273 +189,7 @@ img{display:block}
 .macos-dock-item:active{transform:scale(0.9)}
 .macos-dock-item img{width:100%;height:100%;object-fit:cover}
 
-/* macOS Mobile */
-@media(max-width:700px){
-  .macos-sidebar{width:56px;padding:8px 0}
-  .macos-sidebar-section{display:none}
-  .macos-sidebar-item{padding:8px;margin:2px 6px;justify-content:center}
-  .macos-sidebar-item span,.macos-sidebar-badge{display:none}
-  .macos-sidebar-icon{width:auto;font-size:18px}
-  .macos-cards{grid-template-columns:1fr}
-}
-
-/* ================================================================
-   STYLE 3: Web Dashboard
-   ================================================================ */
-.dash-view{
-  display:flex;height:100%;
-  background:#0f1117;
-}
-.dash-nav{
-  width:220px;flex-shrink:0;
-  background:#161822;
-  border-right:1px solid rgba(255,255,255,0.06);
-  display:flex;flex-direction:column;
-  overflow:hidden;
-}
-.dash-nav-header{
-  padding:20px 16px 12px;
-  font-size:16px;font-weight:700;
-  display:flex;align-items:center;gap:8px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.dash-nav-scroll{
-  flex:1;overflow-y:auto;padding:8px 0;
-  scrollbar-width:none;
-}
-.dash-nav-scroll::-webkit-scrollbar{display:none}
-.dash-nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 16px;margin:1px 8px;
-  border-radius:8px;
-  font-size:13px;
-  color:rgba(255,255,255,0.6);
-  cursor:pointer;
-  transition:all 0.15s;
-}
-.dash-nav-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.85)}
-.dash-nav-item.active{background:rgba(99,102,241,0.15);color:#818cf8}
-.dash-nav-icon{width:22px;text-align:center;font-size:16px;flex-shrink:0}
-.dash-nav-count{
-  margin-left:auto;font-size:11px;
-  color:rgba(255,255,255,0.3);
-}
-
-.dash-main{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;
-}
-.dash-topbar{
-  padding:16px 24px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  display:flex;align-items:center;gap:16px;
-  flex-shrink:0;
-}
-.dash-topbar-title{font-size:18px;font-weight:600;white-space:nowrap}
-.dash-search{
-  position:relative;flex:1;max-width:400px;
-}
-.dash-search input{
-  width:100%;
-  padding:8px 12px 8px 34px;
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:8px;
-  background:rgba(255,255,255,0.04);
-  color:#fff;font-size:13px;font-family:inherit;
-  outline:none;transition:all 0.2s;
-}
-.dash-search input:focus{border-color:rgba(99,102,241,0.4);background:rgba(255,255,255,0.06)}
-.dash-search input::placeholder{color:rgba(255,255,255,0.25)}
-.dash-search svg{
-  position:absolute;left:11px;top:50%;transform:translateY(-50%);
-  width:14px;height:14px;color:rgba(255,255,255,0.3);
-}
-
-.dash-content{
-  flex:1;overflow-y:auto;padding:20px 24px;
-  scrollbar-width:none;
-}
-.dash-content::-webkit-scrollbar{display:none}
-.dash-cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:14px;
-}
-.dash-card{
-  display:flex;align-items:center;gap:14px;
-  padding:14px 16px;
-  border-radius:12px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.06);
-  cursor:pointer;
-  transition:all 0.2s;
-}
-.dash-card:hover{
-  background:rgba(255,255,255,0.06);
-  border-color:rgba(99,102,241,0.2);
-  transform:translateY(-1px);
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
-}
-.dash-card:active{transform:scale(0.98)}
-.dash-card-favicon{
-  width:36px;height:36px;border-radius:10px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:600;
-  background:rgba(255,255,255,0.06);
-  overflow:hidden;
-}
-.dash-card-favicon img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.dash-card-info{flex:1;min-width:0}
-.dash-card-title{font-size:14px;font-weight:500}
-.dash-card-domain{font-size:12px;color:rgba(255,255,255,0.3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dash-card-arrow{color:rgba(255,255,255,0.15);font-size:14px}
-
-/* Dashboard Mobile */
-@media(max-width:700px){
-  .dash-nav{display:none}
-  .dash-mobile-nav{
-    display:flex !important;
-    overflow-x:auto;
-    padding:8px 12px;
-    gap:6px;
-    background:#161822;
-    border-bottom:1px solid rgba(255,255,255,0.06);
-    scrollbar-width:none;
-  }
-  .dash-mobile-nav::-webkit-scrollbar{display:none}
-  .dash-mobile-chip{
-    padding:6px 14px;border-radius:16px;
-    background:rgba(255,255,255,0.06);
-    font-size:12px;white-space:nowrap;
-    color:rgba(255,255,255,0.6);
-    cursor:pointer;flex-shrink:0;
-    border:1px solid transparent;
-    transition:all 0.15s;
-  }
-  .dash-mobile-chip.active{
-    background:rgba(99,102,241,0.15);
-    color:#818cf8;
-    border-color:rgba(99,102,241,0.3);
-  }
-  .dash-cards{grid-template-columns:1fr}
-}
-.dash-mobile-nav{display:none}
-
-/* ================================================================
-   STYLE 4: iOS App Library
-   ================================================================ */
-.lib-view{
-  display:flex;flex-direction:column;height:100%;
-  background:rgba(20,20,28,0.97);
-}
-.lib-search{
-  padding:12px 16px 8px;flex-shrink:0;
-}
-.lib-search input{
-  width:100%;padding:10px 16px 10px 38px;
-  border:none;border-radius:12px;
-  background:rgba(255,255,255,0.08);
-  color:#fff;font-size:15px;font-family:inherit;
-  outline:none;transition:background 0.2s;
-}
-.lib-search input:focus{background:rgba(255,255,255,0.13)}
-.lib-search input::placeholder{color:rgba(255,255,255,0.3)}
-.lib-search-wrap{position:relative}
-.lib-search-wrap svg{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;color:rgba(255,255,255,0.35);
-}
-
-.lib-tags{
-  padding:4px 16px 8px;
-  display:flex;gap:8px;
-  overflow-x:auto;flex-shrink:0;
-  scrollbar-width:none;
-}
-.lib-tags::-webkit-scrollbar{display:none}
-.lib-tag{
-  padding:6px 16px;border-radius:20px;
-  background:rgba(255,255,255,0.08);
-  font-size:13px;white-space:nowrap;
-  color:rgba(255,255,255,0.6);
-  cursor:pointer;flex-shrink:0;
-  transition:all 0.2s;
-  border:0.5px solid transparent;
-}
-.lib-tag.active{
-  background:rgba(255,255,255,0.16);
-  color:#fff;
-  border-color:rgba(255,255,255,0.1);
-}
-.lib-tag:hover{background:rgba(255,255,255,0.12)}
-
-.lib-list-wrap{
-  flex:1;overflow-y:auto;
-  padding:0 16px 20px;
-  scrollbar-width:none;
-}
-.lib-list-wrap::-webkit-scrollbar{display:none}
-
-.lib-group{
-  margin-bottom:20px;
-}
-.lib-group-header{
-  font-size:20px;font-weight:700;
-  padding:8px 4px 10px;
-  position:sticky;top:0;
-  background:rgba(20,20,28,0.92);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  z-index:2;
-}
-.lib-group-emoji{
-  font-size:22px;margin-right:6px;
-}
-.lib-group-links{
-  display:flex;flex-direction:column;gap:2px;
-}
-.lib-link{
-  display:flex;align-items:center;gap:14px;
-  padding:11px 12px;
-  border-radius:12px;
-  cursor:pointer;
-  transition:background 0.15s;
-}
-.lib-link:hover{background:rgba(255,255,255,0.06)}
-.lib-link:active{background:rgba(255,255,255,0.1)}
-.lib-link-favicon{
-  width:36px;height:36px;border-radius:9px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:600;
-  background:rgba(255,255,255,0.08);
-  overflow:hidden;
-}
-.lib-link-favicon img{width:100%;height:100%;object-fit:cover;border-radius:9px}
-.lib-link-info{flex:1;min-width:0}
-.lib-link-title{font-size:16px;font-weight:400}
-.lib-link-domain{font-size:12px;color:rgba(255,255,255,0.35);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lib-link-arrow{color:rgba(255,255,255,0.15);font-size:16px}
-
-/* Letter Index */
-.lib-index{
-  position:fixed;
-  right:4px;
-  top:50%;
-  transform:translateY(-50%);
-  display:flex;flex-direction:column;
-  align-items:center;gap:1px;
-  z-index:100;
-  padding:4px 2px;
-}
-.lib-index-letter{
-  font-size:10px;font-weight:600;
-  color:rgba(255,255,255,0.3);
-  padding:1px 4px;
-  cursor:pointer;
-  transition:color 0.15s;
-}
-.lib-index-letter:hover,.lib-index-letter.active{color:#fff}
-
-/* ========== Search Results Shared ========== */
+/* Global Search Overlay */
 .search-results-overlay{
   position:fixed;inset:0;z-index:8000;
   display:none;opacity:0;
@@ -765,6 +266,16 @@ img{display:block}
 .sr-item-title{font-size:14px}
 .sr-item-sub{font-size:12px;color:rgba(255,255,255,0.35);margin-top:1px}
 .sr-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,0.3);font-size:14px}
+
+/* Responsive */
+@media(max-width:700px){
+  .macos-sidebar{width:56px;padding:8px 0}
+  .macos-sidebar-section{display:none}
+  .macos-sidebar-item{padding:8px;margin:2px 6px;justify-content:center}
+  .macos-sidebar-item span,.macos-sidebar-badge{display:none}
+  .macos-sidebar-icon{width:auto;font-size:18px}
+  .macos-cards{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -772,117 +283,35 @@ img{display:block}
 <!-- Wallpaper -->
 <div class="wallpaper"></div>
 
-<!-- Style Switcher -->
-<div class="style-switcher">
-  <button class="switcher-btn active" onclick="switchStyle(0)">Control Center</button>
-  <button class="switcher-btn" onclick="switchStyle(1)">macOS</button>
-  <button class="switcher-btn" onclick="switchStyle(2)">Dashboard</button>
-  <button class="switcher-btn" onclick="switchStyle(3)">App Library</button>
-</div>
-
-<!-- Workspace -->
-<div class="workspace">
-
-  <!-- ========== Style 1: iOS Control Center ========== -->
-  <div class="ws-view active" id="ws0">
-    <div class="cc-view">
-      <div class="cc-search">
-        <div class="cc-search-wrap">
+<!-- macOS View -->
+<div class="macos-view">
+  <div class="macos-menubar">
+    <span class="macos-menubar-logo"></span>
+    <span class="macos-menubar-app">Zenith Nav</span>
+    <span class="macos-menubar-item">File</span>
+    <span class="macos-menubar-item">Edit</span>
+    <span class="macos-menubar-item">View</span>
+    <span class="macos-menubar-right">
+      <span id="macClock"></span>
+    </span>
+  </div>
+  <div class="macos-body">
+    <div class="macos-sidebar" id="macSidebar"></div>
+    <div class="macos-main">
+      <div class="macos-main-header">
+        <div class="macos-main-title" id="macTitle">全部</div>
+        <div class="macos-search">
           <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
-          <input type="text" placeholder="搜索分类或链接..." oninput="ccSearch(this.value)" onfocus="ccSearch(this.value)">
+          <input type="text" placeholder="搜索链接..." oninput="macSearch(this.value)">
         </div>
       </div>
-      <div class="cc-grid-wrap" id="ccGridWrap">
-        <div class="cc-grid" id="ccGrid"></div>
-      </div>
-      <div class="cc-dock">
-        <div class="cc-dock-inner" id="ccDock"></div>
+      <div class="macos-content">
+        <div class="macos-cards" id="macCards"></div>
       </div>
     </div>
   </div>
-
-  <!-- ========== Style 2: macOS ========== -->
-  <div class="ws-view" id="ws1">
-    <div class="macos-view">
-      <div class="macos-menubar">
-        <span class="macos-menubar-logo"></span>
-        <span class="macos-menubar-app">Zenith Nav</span>
-        <span class="macos-menubar-item">File</span>
-        <span class="macos-menubar-item">Edit</span>
-        <span class="macos-menubar-item">View</span>
-        <span class="macos-menubar-right">
-          <span id="macClock"></span>
-        </span>
-      </div>
-      <div class="macos-body">
-        <div class="macos-sidebar" id="macSidebar"></div>
-        <div class="macos-main">
-          <div class="macos-main-header">
-            <div class="macos-main-title" id="macTitle">全部</div>
-            <div class="macos-search">
-              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
-              <input type="text" placeholder="搜索链接..." oninput="macSearch(this.value)">
-            </div>
-          </div>
-          <div class="macos-content">
-            <div class="macos-cards" id="macCards"></div>
-          </div>
-        </div>
-      </div>
-      <div class="macos-dock">
-        <div class="macos-dock-inner" id="macDock"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== Style 3: Dashboard ========== -->
-  <div class="ws-view" id="ws2">
-    <div class="dash-view">
-      <div class="dash-nav">
-        <div class="dash-nav-header">Zenith Nav</div>
-        <div class="dash-nav-scroll" id="dashNav"></div>
-      </div>
-      <div class="dash-main">
-        <div class="dash-mobile-nav" id="dashMobileNav"></div>
-        <div class="dash-topbar">
-          <div class="dash-topbar-title" id="dashTitle">全部链接</div>
-          <div class="dash-search">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
-            <input type="text" placeholder="搜索链接..." oninput="dashSearch(this.value)">
-          </div>
-        </div>
-        <div class="dash-content">
-          <div class="dash-cards" id="dashCards"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== Style 4: App Library ========== -->
-  <div class="ws-view" id="ws3">
-    <div class="lib-view">
-      <div class="lib-search">
-        <div class="lib-search-wrap">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
-          <input type="text" placeholder="搜索..." oninput="libSearch(this.value)">
-        </div>
-      </div>
-      <div class="lib-tags" id="libTags"></div>
-      <div class="lib-list-wrap" id="libListWrap"></div>
-    </div>
-  </div>
-
-</div>
-
-<!-- CC Panel Overlay -->
-<div class="cc-panel-overlay" id="ccPanelOverlay">
-  <div class="cc-panel-backdrop" onclick="closeCCPanel()"></div>
-  <div class="cc-panel">
-    <div class="cc-panel-header">
-      <div class="cc-panel-title" id="ccPanelTitle"></div>
-      <button class="cc-panel-close" onclick="closeCCPanel()">&times;</button>
-    </div>
-    <div class="cc-link-list" id="ccLinkList"></div>
+  <div class="macos-dock">
+    <div class="macos-dock-inner" id="macDock"></div>
   </div>
 </div>
 
@@ -1047,79 +476,9 @@ function searchLinks(q){
   return getAllLinks().filter(l=>l.title.toLowerCase().includes(q)||getDomain(l.url).toLowerCase().includes(q)||l.folder.toLowerCase().includes(q));
 }
 
-// ========== Style Switcher ==========
-let currentStyle=0;
-function switchStyle(idx){
-  if(idx===currentStyle)return;
-  document.querySelectorAll('.switcher-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
-  document.querySelectorAll('.ws-view').forEach((v,i)=>v.classList.toggle('active',i===idx));
-  currentStyle=idx;
-}
+// ========== macOS Sidebar & Content ==========
+let macCurrentCat=-1;
 
-// ========== Style 1: Control Center ==========
-function renderCC(){
-  const grid=document.getElementById('ccGrid');
-  let h='';
-  DATA.folders.forEach((f,i)=>{
-    h+='<div class="cc-tile" onclick="openCCPanel('+i+')">';
-    h+='<div class="cc-tile-icon">'+f.icon+'</div>';
-    h+='<div class="cc-tile-name">'+f.name+'</div>';
-    h+='<div class="cc-tile-count">'+f.links.length+' 项</div>';
-    h+='</div>';
-  });
-  grid.innerHTML=h;
-
-  // Dock
-  const dock=document.getElementById('ccDock');
-  dock.innerHTML=DATA.dock.map(d=>
-    '<a class="cc-dock-item" href="'+d.url+'" target="_blank" rel="noopener">'+
-    '<div class="cc-dock-icon" style="background:'+d.color+'">'+faviconImg(d.url,d.emoji)+'</div>'+
-    '<div class="cc-dock-label">'+d.title+'</div></a>'
-  ).join('');
-}
-
-function openCCPanel(i){
-  const f=DATA.folders[i];
-  document.getElementById('ccPanelTitle').textContent=f.icon+' '+f.name;
-  document.getElementById('ccLinkList').innerHTML=f.links.map(l=>
-    '<a class="cc-link-item" href="'+l.url+'" target="_blank" rel="noopener">'+
-    '<div class="cc-link-favicon" style="background:'+getColor(l.title)+'">'+faviconImg(l.url,l.title.charAt(0))+'</div>'+
-    '<div class="cc-link-info"><div class="cc-link-title">'+l.title+'</div><div class="cc-link-domain">'+getDomain(l.url)+'</div></div></a>'
-  ).join('');
-  document.getElementById('ccPanelOverlay').classList.add('open');
-}
-function closeCCPanel(){
-  document.getElementById('ccPanelOverlay').classList.remove('open');
-}
-
-let ccSearchTimer=null;
-function ccSearch(q){
-  clearTimeout(ccSearchTimer);
-  ccSearchTimer=setTimeout(()=>{
-    const grid=document.getElementById('ccGrid');
-    if(!q.trim()){renderCC();return}
-    const results=searchLinks(q);
-    if(!results||!results.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,0.3)">没有找到结果</div>';return}
-    // Group by folder
-    const grouped={};
-    results.forEach(r=>{if(!grouped[r.folder])grouped[r.folder]={icon:r.folderIcon,links:[]};grouped[r.folder].links.push(r)});
-    let h='';
-    Object.entries(grouped).forEach(([name,g])=>{
-      h+='<div class="cc-tile" onclick="openCCPanelByName(\''+name.replace(/'/g,"\\'")+'\')" style="grid-column:1/-1;aspect-ratio:auto;padding:12px 16px;flex-direction:row;gap:12px;justify-content:flex-start">';
-      h+='<div class="cc-tile-icon" style="font-size:24px">'+g.icon+'</div>';
-      h+='<div><div class="cc-tile-name" style="text-align:left">'+name+'</div>';
-      h+='<div class="cc-tile-count">'+g.links.map(l=>l.title).join(', ')+'</div></div></div>';
-    });
-    grid.innerHTML=h;
-  },200);
-}
-function openCCPanelByName(name){
-  const i=DATA.folders.findIndex(f=>f.name===name);
-  if(i>=0)openCCPanel(i);
-}
-
-// ========== Style 2: macOS ==========
-let macCurrentCat=-1; // -1 = all
 function renderMac(){
   const sidebar=document.getElementById('macSidebar');
   let h='<div class="macos-sidebar-section">分类</div>';
@@ -1175,117 +534,6 @@ function macSearch(q){
   macSearchTimer=setTimeout(()=>renderMacCards(q),200);
 }
 
-// ========== Style 3: Dashboard ==========
-let dashCurrentCat=-1;
-function renderDash(){
-  const nav=document.getElementById('dashNav');
-  let h='<div class="dash-nav-item'+(dashCurrentCat===-1?' active':'')+'" onclick="dashSelect(-1)"><span class="dash-nav-icon">📋</span><span>全部</span><span class="dash-nav-count">'+getAllLinks().length+'</span></div>';
-  DATA.folders.forEach((f,i)=>{
-    h+='<div class="dash-nav-item'+(dashCurrentCat===i?' active':'')+'" onclick="dashSelect('+i+')"><span class="dash-nav-icon">'+f.icon+'</span><span>'+f.name+'</span><span class="dash-nav-count">'+f.links.length+'</span></div>';
-  });
-  nav.innerHTML=h;
-
-  // Mobile nav
-  const mnav=document.getElementById('dashMobileNav');
-  let mh='<div class="dash-mobile-chip'+(dashCurrentCat===-1?' active':'')+'" onclick="dashSelect(-1)">全部</div>';
-  DATA.folders.forEach((f,i)=>{
-    mh+='<div class="dash-mobile-chip'+(dashCurrentCat===i?' active':'')+'" onclick="dashSelect('+i+')">'+f.icon+' '+f.name+'</div>';
-  });
-  mnav.innerHTML=mh;
-
-  renderDashCards();
-}
-
-function dashSelect(i){
-  dashCurrentCat=i;
-  renderDash();
-}
-
-function renderDashCards(filter){
-  const title=document.getElementById('dashTitle');
-  const cards=document.getElementById('dashCards');
-  let links=[];
-  if(dashCurrentCat===-1){
-    title.textContent='全部链接';
-    DATA.folders.forEach(f=>f.links.forEach(l=>links.push({...l,folder:f.name})));
-  }else{
-    const f=DATA.folders[dashCurrentCat];
-    title.textContent=f.icon+' '+f.name;
-    links=f.links.map(l=>({...l,folder:f.name}));
-  }
-  if(filter){
-    const q=filter.toLowerCase();
-    links=links.filter(l=>l.title.toLowerCase().includes(q)||getDomain(l.url).toLowerCase().includes(q));
-  }
-  if(!links.length){
-    cards.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,0.3)">没有找到结果</div>';
-    return;
-  }
-  cards.innerHTML=links.map(l=>
-    '<a class="dash-card" href="'+l.url+'" target="_blank" rel="noopener">'+
-    '<div class="dash-card-favicon">'+faviconImg(l.url,l.title.charAt(0))+'</div>'+
-    '<div class="dash-card-info"><div class="dash-card-title">'+l.title+'</div><div class="dash-card-domain">'+getDomain(l.url)+'</div></div>'+
-    '<div class="dash-card-arrow">›</div></a>'
-  ).join('');
-}
-
-let dashSearchTimer=null;
-function dashSearch(q){
-  clearTimeout(dashSearchTimer);
-  dashSearchTimer=setTimeout(()=>renderDashCards(q),200);
-}
-
-// ========== Style 4: App Library ==========
-let libCurrentCat=-1;
-function renderLib(){
-  // Tags
-  const tags=document.getElementById('libTags');
-  let h='<div class="lib-tag'+(libCurrentCat===-1?' active':'')+'" onclick="libSelect(-1)">全部</div>';
-  DATA.folders.forEach((f,i)=>{
-    h+='<div class="lib-tag'+(libCurrentCat===i?' active':'')+'" onclick="libSelect('+i+')">'+f.icon+' '+f.name+'</div>';
-  });
-  tags.innerHTML=h;
-
-  renderLibList();
-}
-
-function libSelect(i){
-  libCurrentCat=i;
-  renderLib();
-}
-
-function renderLibList(filter){
-  const wrap=document.getElementById('libListWrap');
-  let folders=libCurrentCat===-1?DATA.folders:[DATA.folders[libCurrentCat]];
-  let h='';
-  folders.forEach(f=>{
-    let links=f.links;
-    if(filter){
-      const q=filter.toLowerCase();
-      links=links.filter(l=>l.title.toLowerCase().includes(q)||getDomain(l.url).toLowerCase().includes(q));
-    }
-    if(!links.length)return;
-    h+='<div class="lib-group">';
-    h+='<div class="lib-group-header"><span class="lib-group-emoji">'+f.icon+'</span>'+f.name+'</div>';
-    h+='<div class="lib-group-links">';
-    links.forEach(l=>{
-      h+='<a class="lib-link" href="'+l.url+'" target="_blank" rel="noopener">'+
-      '<div class="lib-link-favicon" style="background:'+getColor(l.title)+'">'+faviconImg(l.url,l.title.charAt(0))+'</div>'+
-      '<div class="lib-link-info"><div class="lib-link-title">'+l.title+'</div><div class="lib-link-domain">'+getDomain(l.url)+'</div></div>'+
-      '<div class="lib-link-arrow">›</div></a>';
-    });
-    h+='</div></div>';
-  });
-  if(!h)h='<div style="text-align:center;padding:60px 0;color:rgba(255,255,255,0.3)">没有找到结果</div>';
-  wrap.innerHTML=h;
-}
-
-let libSearchTimer=null;
-function libSearch(q){
-  clearTimeout(libSearchTimer);
-  libSearchTimer=setTimeout(()=>renderLibList(q),200);
-}
-
 // ========== Global Search ==========
 function openGlobalSearch(){
   document.getElementById('searchOverlay').classList.add('open');
@@ -1325,7 +573,6 @@ function updateClock(){
 // ========== Keyboard ==========
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    closeCCPanel();
     closeGlobalSearch();
   }
   if((e.metaKey||e.ctrlKey)&&e.key==='k'){
@@ -1335,10 +582,7 @@ document.addEventListener('keydown',e=>{
 });
 
 // ========== Init ==========
-renderCC();
 renderMac();
-renderDash();
-renderLib();
 updateClock();
 setInterval(updateClock,10000);
 </script>
