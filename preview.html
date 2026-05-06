@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Zenith Nav</title>
 <style>
-/* ========== CSS Reset & Base ========== */
+/* ========== Reset & Base ========== */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;touch-action:none}
+html,body{height:100%;overflow:hidden}
 body{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue','PingFang SC',sans-serif;
   background:#000;
   color:#fff;
   -webkit-font-smoothing:antialiased;
@@ -18,511 +18,263 @@ body{
   -webkit-user-select:none;
 }
 
-/* ========== iOS Design Tokens ========== */
 :root{
-  /* iOS Standard Grid */
-  --ios-icon-size:60px;
-  --ios-icon-radius:14px; /* Squircle approx */
-  --ios-cols:4;
-  --ios-rows:6;
-  --icon-gap-x:22px;
-  --icon-gap-y:26px;
-  --page-margin:23px;
-  
-  /* Status Bar */
-  --status-bar-height:44px;
-  
-  /* Label */
-  --label-font-size:11px;
-  --label-line-height:13px;
-  --label-margin-top:5px;
-  
-  /* Dock */
-  --dock-height:84px;
-  --dock-padding:12px;
-  --dock-icon-size:52px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
+a{color:inherit;text-decoration:none}
+img{display:block}
 
-/* ========== Wallpaper Layer ========== */
+/* ========== Wallpaper ========== */
 .wallpaper{
-  position:fixed;
-  inset:0;
-  z-index:0;
+  position:fixed;inset:0;z-index:0;
   background:
-    linear-gradient(135deg, rgba(102,126,234,0.4) 0%, transparent 50%),
-    linear-gradient(225deg, rgba(118,75,162,0.4) 0%, transparent 50%),
-    linear-gradient(315deg, rgba(240,147,251,0.3) 0%, transparent 50%),
-    linear-gradient(45deg, rgba(79,172,254,0.3) 0%, transparent 50%),
-    linear-gradient(180deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #533483 100%);
-  background-size:cover;
+    linear-gradient(135deg,rgba(102,126,234,0.4) 0%,transparent 50%),
+    linear-gradient(225deg,rgba(118,75,162,0.4) 0%,transparent 50%),
+    linear-gradient(315deg,rgba(240,147,251,0.3) 0%,transparent 50%),
+    linear-gradient(45deg,rgba(79,172,254,0.3) 0%,transparent 50%),
+    linear-gradient(180deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#533483 100%);
 }
 
-/* ========== Status Bar ========== */
-.status-bar{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:var(--status-bar-height);
-  z-index:1000;
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  padding:12px 24px 0;
-  font-size:15px;
-  font-weight:600;
-  letter-spacing:-0.3px;
-}
-.status-bar-time{
-  font-variant-numeric:tabular-nums;
-  min-width:40px;
-}
-.status-bar-icons{
-  display:flex;
-  align-items:center;
-  gap:5px;
-}
-.status-icon{
-  width:18px;
-  height:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* ========== Desktop Container ========== */
-.desktop-container{
-  position:fixed;
-  top:var(--status-bar-height);
-  left:0;
-  right:0;
-  bottom:var(--dock-height);
-  z-index:10;
-  overflow-y:auto;
-  overflow-x:hidden;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  padding:8px var(--page-margin) 20px;
-}
-.desktop-container::-webkit-scrollbar{display:none}
-
-/* ========== Icon Grid ========== */
-.icon-grid{
-  display:grid;
-  grid-template-columns:repeat(var(--ios-cols),1fr);
-  gap:var(--icon-gap-y) var(--icon-gap-x);
-  justify-items:center;
-  padding-top:4px;
-}
-
-/* ========== Squircle Shape ========== */
-.squircle{
-  border-radius:var(--ios-icon-radius);
-  position:relative;
-  overflow:hidden;
-}
-.squircle::before{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  box-shadow:inset 0 0.5px 0 rgba(255,255,255,0.2);
-  pointer-events:none;
+/* ========== macOS Layout ========== */
+.macos-view{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  background:rgba(30,30,35,0.95);
   z-index:1;
 }
 
-/* ========== App Icon ========== */
-.app-icon{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:76px;
-  cursor:pointer;
-  transition:transform 0.1s cubic-bezier(0.4,0,0.2,1);
-  will-change:transform;
+/* Menu Bar */
+.macos-menubar{
+  height:28px;flex-shrink:0;
+  display:flex;align-items:center;
+  padding:0 16px;gap:16px;
+  background:rgba(40,40,48,0.9);
+  backdrop-filter:blur(30px) saturate(180%);
+  -webkit-backdrop-filter:blur(30px) saturate(180%);
+  border-bottom:0.5px solid rgba(255,255,255,0.06);
+  font-size:13px;font-weight:500;
 }
-.app-icon:active{transform:scale(0.87)}
+.macos-menubar-logo{font-size:15px}
+.macos-menubar-app{color:rgba(255,255,255,0.85);font-weight:600}
+.macos-menubar-item{color:rgba(255,255,255,0.6);cursor:pointer;transition:color 0.15s}
+.macos-menubar-item:hover{color:#fff}
+.macos-menubar-right{margin-left:auto;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,0.6);font-size:12px}
 
-.app-icon-img{
-  width:var(--ios-icon-size);
-  height:var(--ios-icon-size);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:28px;
-  background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,rgba(255,255,255,0) 50%),var(--icon-bg,#636366);
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.25),
-    0 0 0 0.5px rgba(0,0,0,0.1),
-    inset 0 0.5px 0 rgba(255,255,255,0.25);
-}
-.app-icon-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+/* Body */
+.macos-body{
+  flex:1;display:flex;overflow:hidden;
 }
 
-.app-icon-label{
-  margin-top:var(--label-margin-top);
-  font-size:var(--label-font-size);
-  line-height:var(--label-line-height);
-  font-weight:400;
-  text-align:center;
-  color:rgba(255,255,255,0.95);
-  text-shadow:0 1px 2px rgba(0,0,0,0.4);
-  max-width:76px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  letter-spacing:-0.1px;
-}
-
-/* ========== Folder ========== */
-.folder{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  width:76px;
-  cursor:pointer;
-  transition:transform 0.1s cubic-bezier(0.4,0,0.2,1);
-  will-change:transform;
-}
-.folder:active{transform:scale(0.87)}
-
-.folder-icon{
-  width:var(--ios-icon-size);
-  height:var(--ios-icon-size);
-  background:rgba(255,255,255,0.18);
-  backdrop-filter:blur(25px) saturate(180%);
-  -webkit-backdrop-filter:blur(25px) saturate(180%);
-  border:0.5px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.2),
-    inset 0 0.5px 0 rgba(255,255,255,0.15);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr 1fr;
-  gap:2px;
-  padding:10px;
-  position:relative;
-}
-.folder-icon::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:50%;
-  background:linear-gradient(180deg,rgba(255,255,255,0.08) 0%,transparent 100%);
-  border-radius:inherit;
-  pointer-events:none;
-}
-
-.folder-mini-icon{
-  width:100%;
-  height:100%;
-  border-radius:5px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  font-weight:600;
-}
-
-.folder-label{
-  margin-top:var(--label-margin-top);
-  font-size:var(--label-font-size);
-  line-height:var(--label-line-height);
-  font-weight:400;
-  text-align:center;
-  color:rgba(255,255,255,0.95);
-  text-shadow:0 1px 2px rgba(0,0,0,0.4);
-  max-width:76px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-/* ========== Folder Overlay ========== */
-.folder-overlay{
-  position:fixed;
-  inset:0;
-  z-index:2000;
-  display:none;
-  opacity:0;
-  transition:opacity 0.2s ease;
-}
-.folder-overlay.open{
-  display:block;
-  opacity:1;
-}
-
-.folder-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.45);
-  backdrop-filter:blur(20px) saturate(120%);
-  -webkit-backdrop-filter:blur(20px) saturate(120%);
-}
-
-.folder-panel-wrapper{
-  position:absolute;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  transition:all 0.35s cubic-bezier(0.32,0.72,0,1);
-  will-change:transform,opacity,width,height;
-}
-
-.folder-panel{
-  background:rgba(255,255,255,0.16);
-  backdrop-filter:blur(50px) saturate(200%);
-  -webkit-backdrop-filter:blur(50px) saturate(200%);
-  border-radius:24px;
-  border:0.5px solid rgba(255,255,255,0.12);
-  box-shadow:
-    0 25px 80px rgba(0,0,0,0.4),
-    inset 0 0.5px 0 rgba(255,255,255,0.1);
-  padding:20px 16px 16px;
-  width:100%;
-}
-
-.folder-panel-title{
-  text-align:center;
-  font-size:20px;
-  font-weight:600;
-  margin-bottom:16px;
-  text-shadow:0 1px 2px rgba(0,0,0,0.3);
-  letter-spacing:-0.3px;
-}
-
-.folder-panel-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:20px 0;
-  justify-items:center;
-}
-
-.folder-close-btn{
-  margin-top:16px;
-  padding:8px 24px;
-  background:rgba(255,255,255,0.15);
-  border-radius:20px;
-  font-size:15px;
-  font-weight:500;
-  color:rgba(255,255,255,0.9);
-  cursor:pointer;
-  transition:background 0.15s;
-  border:0.5px solid rgba(255,255,255,0.1);
-}
-.folder-close-btn:hover{background:rgba(255,255,255,0.22)}
-.folder-close-btn:active{background:rgba(255,255,255,0.1)}
-
-/* ========== Search Overlay ========== */
-.search-overlay{
-  position:fixed;
-  inset:0;
-  z-index:3000;
-  display:none;
-  flex-direction:column;
-  padding:60px 20px 20px;
-  opacity:0;
-  transition:opacity 0.2s ease;
-}
-.search-overlay.open{
-  display:flex;
-  opacity:1;
-}
-
-.search-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,0.85);
-  backdrop-filter:blur(30px) saturate(150%);
-  -webkit-backdrop-filter:blur(30px) saturate(150%);
-}
-
-.search-box{
-  position:relative;
-  width:100%;
-  max-width:500px;
-  margin:0 auto 24px;
-}
-.search-box input{
-  width:100%;
-  padding:12px 44px 12px 42px;
-  border:none;
-  border-radius:12px;
-  background:rgba(255,255,255,0.12);
-  color:#fff;
-  font-size:17px;
-  font-family:inherit;
-  outline:none;
-  transition:background 0.15s;
-}
-.search-box input:focus{background:rgba(255,255,255,0.18)}
-.search-box input::placeholder{color:rgba(255,255,255,0.4)}
-.search-icon{
-  position:absolute;
-  left:14px;
-  top:50%;
-  transform:translateY(-50%);
-  width:18px;
-  height:18px;
-  color:rgba(255,255,255,0.5);
-}
-.search-cancel{
-  position:absolute;
-  right:12px;
-  top:50%;
-  transform:translateY(-50%);
-  background:rgba(255,255,255,0.15);
-  border:none;
-  color:rgba(255,255,255,0.8);
-  font-size:14px;
-  padding:5px 12px;
-  border-radius:8px;
-  cursor:pointer;
-  font-family:inherit;
-  font-weight:500;
-  opacity:0;
-  transition:opacity 0.15s;
-  pointer-events:none;
-}
-.search-cancel.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-.search-results{
-  flex:1;
+/* Sidebar */
+.macos-sidebar{
+  width:200px;flex-shrink:0;
+  background:rgba(35,35,42,0.95);
+  border-right:0.5px solid rgba(255,255,255,0.06);
   overflow-y:auto;
-  max-width:500px;
-  margin:0 auto;
-  width:100%;
+  padding:8px 0;
   scrollbar-width:none;
 }
-.search-results::-webkit-scrollbar{display:none}
-
-.search-result-item{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:10px 12px;
-  border-radius:12px;
+.macos-sidebar::-webkit-scrollbar{display:none}
+.macos-sidebar-section{
+  padding:4px 12px 4px;
+  font-size:11px;font-weight:600;color:rgba(255,255,255,0.35);
+  text-transform:uppercase;letter-spacing:0.5px;
+  margin-top:8px;
+}
+.macos-sidebar-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;margin:1px 8px;
+  border-radius:6px;
+  font-size:13px;
+  color:rgba(255,255,255,0.75);
   cursor:pointer;
-  transition:background 0.15s;
-  text-decoration:none;
-  color:#fff;
+  transition:all 0.15s;
 }
-.search-result-item:hover{background:rgba(255,255,255,0.08)}
-.search-result-item:active{background:rgba(255,255,255,0.12)}
+.macos-sidebar-item:hover{background:rgba(255,255,255,0.06);color:#fff}
+.macos-sidebar-item.active{background:rgba(59,130,246,0.2);color:#60a5fa}
+.macos-sidebar-icon{width:20px;text-align:center;font-size:14px;flex-shrink:0}
+.macos-sidebar-badge{
+  margin-left:auto;font-size:11px;
+  background:rgba(255,255,255,0.1);
+  padding:1px 6px;border-radius:8px;
+  color:rgba(255,255,255,0.5);
+}
 
-.search-result-icon{
-  width:36px;
-  height:36px;
-  border-radius:9px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  font-weight:600;
+/* Main Content */
+.macos-main{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+}
+.macos-main-header{
+  padding:16px 24px 12px;
+  border-bottom:0.5px solid rgba(255,255,255,0.06);
   flex-shrink:0;
-  box-shadow:0 1px 4px rgba(0,0,0,0.2);
 }
-.search-result-icon img{width:100%;height:100%;border-radius:9px;object-fit:cover}
-
-.search-result-info{flex:1;min-width:0}
-.search-result-title{font-size:16px;font-weight:400;letter-spacing:-0.2px}
-.search-result-url{font-size:13px;color:rgba(255,255,255,0.4);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-.search-empty{text-align:center;padding:60px 0;color:rgba(255,255,255,0.35);font-size:16px}
-
-/* ========== Dock ========== */
-.dock-container{
-  position:fixed;
-  bottom:8px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:100;
-  padding:0 12px 28px;
+.macos-main-title{font-size:22px;font-weight:700;margin-bottom:10px}
+.macos-search{
+  position:relative;
 }
-
-.dock{
-  display:flex;
-  gap:14px;
-  padding:11px 14px;
-  background:rgba(255,255,255,0.14);
-  backdrop-filter:blur(35px) saturate(200%);
-  -webkit-backdrop-filter:blur(35px) saturate(200%);
-  border-radius:28px;
+.macos-search input{
+  width:100%;max-width:400px;
+  padding:8px 12px 8px 32px;
   border:0.5px solid rgba(255,255,255,0.1);
-  box-shadow:
-    0 10px 40px rgba(0,0,0,0.25),
-    inset 0 0.5px 0 rgba(255,255,255,0.12);
+  border-radius:8px;
+  background:rgba(255,255,255,0.06);
+  color:#fff;font-size:13px;font-family:inherit;
+  outline:none;transition:all 0.2s;
 }
+.macos-search input:focus{border-color:rgba(59,130,246,0.5);background:rgba(255,255,255,0.08)}
+.macos-search input::placeholder{color:rgba(255,255,255,0.3)}
+.macos-search svg{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;color:rgba(255,255,255,0.35);
+}
+.macos-content{
+  flex:1;overflow-y:auto;padding:16px 24px;
+  scrollbar-width:none;
+}
+.macos-content::-webkit-scrollbar{display:none}
+.macos-cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:12px;
+}
+.macos-card{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.04);
+  border:0.5px solid rgba(255,255,255,0.06);
+  cursor:pointer;
+  transition:all 0.15s;
+}
+.macos-card:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.1)}
+.macos-card:active{transform:scale(0.98)}
+.macos-card-favicon{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;overflow:hidden;
+}
+.macos-card-favicon img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.macos-card-info{flex:1;min-width:0}
+.macos-card-title{font-size:13px;font-weight:500}
+.macos-card-domain{font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-.dock .app-icon{width:62px}
-.dock .app-icon-img{
-  width:var(--dock-icon-size);
-  height:var(--dock-icon-size);
-  font-size:24px;
-  border-radius:12px;
+/* Dock */
+.macos-dock{
+  flex-shrink:0;
+  padding:6px 16px calc(8px + var(--safe-bottom));
+  display:flex;justify-content:center;
 }
-.dock .app-icon-label{font-size:10px;margin-top:4px}
+.macos-dock-inner{
+  display:flex;gap:4px;
+  padding:4px 8px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+  border-radius:16px;
+  border:0.5px solid rgba(255,255,255,0.08);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.macos-dock-inner::-webkit-scrollbar{display:none}
+.macos-dock-item{
+  width:40px;height:40px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  cursor:pointer;transition:transform 0.12s;
+  overflow:hidden;
+}
+.macos-dock-item:hover{transform:scale(1.15) translateY(-4px)}
+.macos-dock-item:active{transform:scale(0.9)}
+.macos-dock-item img{width:100%;height:100%;object-fit:cover}
 
-/* ========== Page Indicator ========== */
-.page-indicator{
-  position:fixed;
-  bottom:calc(var(--dock-height) + 8px);
-  left:50%;
-  transform:translateX(-50%);
-  z-index:50;
-  display:flex;
-  gap:6px;
+/* Global Search Overlay */
+.search-results-overlay{
+  position:fixed;inset:0;z-index:8000;
+  display:none;opacity:0;
+  transition:opacity 0.2s;
 }
-.page-dot{
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.35);
-  transition:background 0.2s;
+.search-results-overlay.open{display:block;opacity:1}
+.search-results-backdrop{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
 }
-.page-dot.active{background:rgba(255,255,255,0.9)}
+.search-results-panel{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(0.95);
+  width:min(480px,92vw);
+  max-height:70vh;
+  background:rgba(30,30,40,0.95);
+  backdrop-filter:blur(40px);
+  -webkit-backdrop-filter:blur(40px);
+  border-radius:20px;
+  border:0.5px solid rgba(255,255,255,0.1);
+  box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:transform 0.25s cubic-bezier(0.32,0.72,0,1);
+}
+.search-results-overlay.open .search-results-panel{transform:translate(-50%,-50%) scale(1)}
+.sr-header{
+  padding:16px 16px 12px;
+  border-bottom:0.5px solid rgba(255,255,255,0.06);
+  display:flex;align-items:center;gap:12px;
+}
+.sr-header input{
+  flex:1;padding:10px 14px 10px 36px;
+  border:none;border-radius:10px;
+  background:rgba(255,255,255,0.08);
+  color:#fff;font-size:15px;font-family:inherit;
+  outline:none;
+}
+.sr-header input::placeholder{color:rgba(255,255,255,0.3)}
+.sr-header-icon{
+  position:absolute;left:28px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;color:rgba(255,255,255,0.35);
+}
+.sr-header-wrap{position:relative;flex:1}
+.sr-close{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.1);
+  border:none;color:rgba(255,255,255,0.7);font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background 0.15s;
+}
+.sr-close:hover{background:rgba(255,255,255,0.18)}
+.sr-list{
+  flex:1;overflow-y:auto;padding:8px;
+  scrollbar-width:none;
+}
+.sr-list::-webkit-scrollbar{display:none}
+.sr-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:10px;
+  cursor:pointer;transition:background 0.12s;
+}
+.sr-item:hover{background:rgba(255,255,255,0.06)}
+.sr-item-favicon{
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;overflow:hidden;
+}
+.sr-item-favicon img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.sr-item-info{flex:1;min-width:0}
+.sr-item-title{font-size:14px}
+.sr-item-sub{font-size:12px;color:rgba(255,255,255,0.35);margin-top:1px}
+.sr-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,0.3);font-size:14px}
 
-/* ========== Responsive ========== */
-@media(min-width:390px){
-  :root{
-    --ios-icon-size:64px;
-    --icon-gap-x:24px;
-    --dock-icon-size:54px;
-  }
-  .app-icon,.folder{width:80px}
-  .dock .app-icon{width:64px}
-}
-
-@media(min-width:428px){
-  :root{
-    --page-margin:27px;
-    --icon-gap-x:26px;
-  }
-}
-
-@media(min-width:768px){
-  :root{
-    --ios-cols:6;
-    --ios-icon-size:68px;
-    --page-margin:40px;
-  }
-  .app-icon,.folder{width:84px}
-}
-
-@media(min-width:1024px){
-  :root{
-    --ios-cols:8;
-    --ios-icon-size:72px;
-  }
-  .app-icon,.folder{width:88px}
+/* Responsive */
+@media(max-width:700px){
+  .macos-sidebar{width:56px;padding:8px 0}
+  .macos-sidebar-section{display:none}
+  .macos-sidebar-item{padding:8px;margin:2px 6px;justify-content:center}
+  .macos-sidebar-item span,.macos-sidebar-badge{display:none}
+  .macos-sidebar-icon{width:auto;font-size:18px}
+  .macos-cards{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -531,70 +283,58 @@ body{
 <!-- Wallpaper -->
 <div class="wallpaper"></div>
 
-<!-- Status Bar -->
-<div class="status-bar">
-  <div class="status-bar-time" id="clock">9:41</div>
-  <div class="status-bar-icons">
-    <svg class="status-icon" viewBox="0 0 18 12" fill="currentColor">
-      <path d="M1 8h2v3H1zm4-2h2v5H5zm4-2h2v7H9zm4-2h2v9h-2zm4-2h2v11h-2z"/>
-    </svg>
-    <svg class="status-icon" viewBox="0 0 16 12" fill="currentColor">
-      <path d="M8 0C4.5 0 1.7 2.3.5 5.5c-.1.3 0 .7.3.8.3.1.7 0 .8-.3C2.5 3.3 5 1.5 8 1.5s5.5 1.8 6.4 4.5c.1.3.5.5.8.3.3-.1.4-.5.3-.8C14.3 2.3 11.5 0 8 0z"/>
-      <path d="M8 4c-2 0-3.7 1.2-4.5 3-.1.3 0 .6.3.7.3.1.6 0 .7-.3C5 6.2 6.4 5.2 8 5.2s3 1 3.5 2.2c.1.3.4.4.7.3.3-.1.4-.4.3-.7C11.7 5.2 10 4 8 4z"/>
-      <circle cx="8" cy="9.5" r="1"/>
-    </svg>
-    <svg class="status-icon" viewBox="0 0 26 12" fill="currentColor">
-      <rect x="0.5" y="0.5" width="23" height="11" rx="2.5" stroke="currentColor" stroke-opacity="0.4" fill="none"/>
-      <rect x="2" y="2" width="19" height="8" rx="1.5" fill="currentColor"/>
-      <path d="M25 4v4c.5 0 1-.5 1-1V5c0-.5-.5-1-1-1z" fill="currentColor" fill-opacity="0.5"/>
-    </svg>
+<!-- macOS View -->
+<div class="macos-view">
+  <div class="macos-menubar">
+    <span class="macos-menubar-logo"></span>
+    <span class="macos-menubar-app">Zenith Nav</span>
+    <span class="macos-menubar-item">File</span>
+    <span class="macos-menubar-item">Edit</span>
+    <span class="macos-menubar-item">View</span>
+    <span class="macos-menubar-right">
+      <span id="macClock"></span>
+    </span>
   </div>
-</div>
-
-<!-- Desktop -->
-<div class="desktop-container" id="desktop"></div>
-
-<!-- Page Indicator -->
-<div class="page-indicator">
-  <div class="page-dot active"></div>
-</div>
-
-<!-- Dock -->
-<div class="dock-container">
-  <div class="dock" id="dock"></div>
-</div>
-
-<!-- Folder Overlay -->
-<div class="folder-overlay" id="folderOverlay">
-  <div class="folder-backdrop" onclick="closeFolder()"></div>
-  <div class="folder-panel-wrapper" id="folderWrapper">
-    <div class="folder-panel">
-      <div class="folder-panel-title" id="folderTitle"></div>
-      <div class="folder-panel-grid" id="folderGrid"></div>
+  <div class="macos-body">
+    <div class="macos-sidebar" id="macSidebar"></div>
+    <div class="macos-main">
+      <div class="macos-main-header">
+        <div class="macos-main-title" id="macTitle">全部</div>
+        <div class="macos-search">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
+          <input type="text" placeholder="搜索链接..." oninput="macSearch(this.value)">
+        </div>
+      </div>
+      <div class="macos-content">
+        <div class="macos-cards" id="macCards"></div>
+      </div>
     </div>
-    <div class="folder-close-btn" onclick="closeFolder()">关闭</div>
+  </div>
+  <div class="macos-dock">
+    <div class="macos-dock-inner" id="macDock"></div>
   </div>
 </div>
 
-<!-- Search Overlay -->
-<div class="search-overlay" id="searchOverlay">
-  <div class="search-backdrop" onclick="closeSearch()"></div>
-  <div class="search-box">
-    <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8">
-      <circle cx="8.5" cy="8.5" r="6.5"/>
-      <path d="m14 14 4 4"/>
-    </svg>
-    <input type="text" id="searchInput" placeholder="搜索" oninput="doSearch()" autocomplete="off">
-    <button class="search-cancel" id="searchCancel" onclick="closeSearch()">取消</button>
+<!-- Global Search Overlay -->
+<div class="search-results-overlay" id="searchOverlay">
+  <div class="search-results-backdrop" onclick="closeGlobalSearch()"></div>
+  <div class="search-results-panel">
+    <div class="sr-header">
+      <div class="sr-header-wrap">
+        <svg class="sr-header-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
+        <input type="text" id="globalSearchInput" placeholder="搜索所有链接..." oninput="globalSearch(this.value)">
+      </div>
+      <button class="sr-close" onclick="closeGlobalSearch()">&times;</button>
+    </div>
+    <div class="sr-list" id="globalSearchResults"></div>
   </div>
-  <div class="search-results" id="searchResults"></div>
 </div>
 
 <script>
 // ========== Data ==========
 const COLORS=['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#64D2FF','#FF6482','#5AC8FA','#FFD60A','#32D74B','#BF5AF2'];
 function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORS[Math.abs(h)%COLORS.length]}
-function getFavicon(u){try{return`https://www.google.com/s2/favicons?domain=${new URL(u).hostname}&sz=128`}catch{return''}}
+function getFavicon(u){try{return'https://www.google.com/s2/favicons?domain='+new URL(u).hostname+'&sz=128'}catch{return''}}
 function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{return u}}
 
 const DATA={
@@ -617,7 +357,7 @@ const DATA={
       {title:"极速机场",url:"https://jsjc.cfd/#/dashboard"},
       {title:"币安aplana",url:"https://litangdingzhen.me/"},
       {title:"hugging",url:"https://www.hugging.com/zh/dashboard"},
-      {title:"baalpha",url:"https://baalpha.xuemusi.com/"},
+      {title:"baalpha",url:"https://baalpha.xuemosi.com/"},
     ]},
     {name:"网站相关",icon:"🌐",links:[
       {title:"免费机场",url:"https://github.com/hwanz/SSR-V2ray-Trojan-vpn"},
@@ -720,182 +460,129 @@ const DATA={
   ]
 };
 
-// ========== Render Functions ==========
-function renderDesktop(){
-  const d=document.getElementById('desktop');
-  let h='<div class="icon-grid">';
-  
-  // Search icon
-  h+=`<div class="app-icon" onclick="openSearch()">
-    <div class="app-icon-img squircle" style="--icon-bg:linear-gradient(145deg,#636366,#48484A)">
-      <svg width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2">
-        <circle cx="8.5" cy="8.5" r="6"/>
-        <path d="m14 14 4 4"/>
-      </svg>
-    </div>
-    <div class="app-icon-label">搜索</div>
-  </div>`;
-  
-  // Folders
-  DATA.folders.forEach((f,i)=>{
-    const p=f.links.slice(0,4).map(l=>`<div class="folder-mini-icon squircle" style="background:${getColor(l.title)};font-size:12px;font-weight:600">${l.title.charAt(0)}</div>`).join('');
-    h+=`<div class="folder" data-index="${i}" onclick="openFolder(${i},this)">
-      <div class="folder-icon squircle">${p}</div>
-      <div class="folder-label">${f.name}</div>
-    </div>`;
-  });
-  
-  h+='</div>';
-  d.innerHTML=h;
+// ========== Helpers ==========
+function faviconImg(url, fallback){
+  return '<img src="'+getFavicon(url)+'" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\''+fallback+'\'">';
 }
-
-function renderDock(){
-  document.getElementById('dock').innerHTML=DATA.dock.map(i=>`
-    <a class="app-icon" href="${i.url}" target="_blank" rel="noopener">
-      <div class="app-icon-img squircle" style="--icon-bg:${i.color}">
-        <img src="${getFavicon(i.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${i.emoji}'">
-      </div>
-      <div class="app-icon-label">${i.title}</div>
-    </a>`).join('');
-}
-
-// ========== Folder Animation ==========
-let folderOpenPos=null;
-
-function openFolder(i,el){
-  const f=DATA.folders[i];
-  const rect=el.getBoundingClientRect();
-  folderOpenPos={x:rect.left+rect.width/2,y:rect.top+rect.height/2};
-  
-  document.getElementById('folderTitle').textContent=f.name;
-  document.getElementById('folderGrid').innerHTML=f.links.map(l=>`
-    <a class="app-icon" href="${l.url}" target="_blank" rel="noopener" style="width:65px">
-      <div class="app-icon-img squircle" style="--icon-bg:${getColor(l.title)};width:52px;height:52px;font-size:20px;font-weight:600;border-radius:12px">
-        <img src="${getFavicon(l.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${l.title.charAt(0)}'">
-      </div>
-      <div class="app-icon-label" style="max-width:65px;font-size:10px;margin-top:4px">${l.title}</div>
-    </a>`).join('');
-  
-  const overlay=document.getElementById('folderOverlay');
-  const wrapper=document.getElementById('folderWrapper');
-  
-  overlay.classList.add('open');
-  
-  // Set initial position (at folder location)
-  const panelWidth=Math.min(360,window.innerWidth-40);
-  const panelHeight=Math.min(400,window.innerHeight-200);
-  
-  wrapper.style.left=`${folderOpenPos.x}px`;
-  wrapper.style.top=`${folderOpenPos.y}px`;
-  wrapper.style.width='60px';
-  wrapper.style.height='60px';
-  wrapper.style.opacity='0.8';
-  wrapper.style.transform='translate(-50%,-50%) scale(0.8)';
-  
-  // Animate to center
-  requestAnimationFrame(()=>{
-    wrapper.style.left='50%';
-    wrapper.style.top='45%';
-    wrapper.style.width=`${panelWidth}px`;
-    wrapper.style.height='auto';
-    wrapper.style.opacity='1';
-    wrapper.style.transform='translate(-50%,-50%) scale(1)';
-  });
-}
-
-function closeFolder(){
-  const overlay=document.getElementById('folderOverlay');
-  const wrapper=document.getElementById('folderWrapper');
-  
-  if(folderOpenPos){
-    // Animate back to folder position
-    wrapper.style.left=`${folderOpenPos.x}px`;
-    wrapper.style.top=`${folderOpenPos.y}px`;
-    wrapper.style.width='60px';
-    wrapper.style.height='60px';
-    wrapper.style.opacity='0';
-    wrapper.style.transform='translate(-50%,-50%) scale(0.8)';
-    
-    setTimeout(()=>{
-      overlay.classList.remove('open');
-      folderOpenPos=null;
-    },300);
-  }else{
-    overlay.classList.remove('open');
-  }
-}
-
-// ========== Search ==========
-function openSearch(){
-  const overlay=document.getElementById('searchOverlay');
-  overlay.classList.add('open');
-  setTimeout(()=>document.getElementById('searchInput').focus(),100);
-}
-
-function closeSearch(){
-  const overlay=document.getElementById('searchOverlay');
-  overlay.classList.remove('open');
-  document.getElementById('searchInput').value='';
-  document.getElementById('searchResults').innerHTML='';
-  document.getElementById('searchCancel').classList.remove('show');
-}
-
-function doSearch(){
-  const q=document.getElementById('searchInput').value.trim().toLowerCase();
-  document.getElementById('searchCancel').classList.toggle('show',q.length>0);
-  
-  if(!q){document.getElementById('searchResults').innerHTML='';return}
-  
+function getAllLinks(){
   const all=[];
-  DATA.folders.forEach(f=>f.links.forEach(l=>all.push({...l,folder:f.name})));
-  DATA.dock.forEach(l=>all.push({...l,folder:'Dock'}));
-  
-  const r=all.filter(l=>l.title.toLowerCase().includes(q)||l.url.toLowerCase().includes(q)||l.folder.toLowerCase().includes(q));
-  
-  if(!r.length){
-    document.getElementById('searchResults').innerHTML='<div class="search-empty">没有找到结果</div>';
+  DATA.folders.forEach(f=>f.links.forEach(l=>all.push({...l,folder:f.name,folderIcon:f.icon})));
+  DATA.dock.forEach(l=>all.push({...l,folder:'Dock',folderIcon:'🚀'}));
+  return all;
+}
+function searchLinks(q){
+  if(!q)return null;
+  q=q.toLowerCase();
+  return getAllLinks().filter(l=>l.title.toLowerCase().includes(q)||getDomain(l.url).toLowerCase().includes(q)||l.folder.toLowerCase().includes(q));
+}
+
+// ========== macOS Sidebar & Content ==========
+let macCurrentCat=-1;
+
+function renderMac(){
+  const sidebar=document.getElementById('macSidebar');
+  let h='<div class="macos-sidebar-section">分类</div>';
+  h+='<div class="macos-sidebar-item'+(macCurrentCat===-1?' active':'')+'" onclick="macSelect(-1)"><span class="macos-sidebar-icon">📋</span><span>全部</span></div>';
+  DATA.folders.forEach((f,i)=>{
+    h+='<div class="macos-sidebar-item'+(macCurrentCat===i?' active':'')+'" onclick="macSelect('+i+')"><span class="macos-sidebar-icon">'+f.icon+'</span><span>'+f.name+'</span><span class="macos-sidebar-badge">'+f.links.length+'</span></div>';
+  });
+  sidebar.innerHTML=h;
+
+  // Dock
+  document.getElementById('macDock').innerHTML=DATA.dock.map(d=>
+    '<a class="macos-dock-item" href="'+d.url+'" target="_blank" rel="noopener" title="'+d.title+'" style="background:'+d.color+'">'+faviconImg(d.url,d.emoji)+'</a>'
+  ).join('');
+
+  renderMacCards();
+}
+
+function macSelect(i){
+  macCurrentCat=i;
+  renderMac();
+}
+
+function renderMacCards(filter){
+  const title=document.getElementById('macTitle');
+  const cards=document.getElementById('macCards');
+  let links=[];
+  if(macCurrentCat===-1){
+    title.textContent='全部';
+    DATA.folders.forEach(f=>f.links.forEach(l=>links.push({...l,folder:f.name})));
+  }else{
+    const f=DATA.folders[macCurrentCat];
+    title.textContent=f.icon+' '+f.name;
+    links=f.links.map(l=>({...l,folder:f.name}));
+  }
+  if(filter){
+    const q=filter.toLowerCase();
+    links=links.filter(l=>l.title.toLowerCase().includes(q)||getDomain(l.url).toLowerCase().includes(q));
+  }
+  if(!links.length){
+    cards.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:rgba(255,255,255,0.3)">没有找到结果</div>';
     return;
   }
-  
-  document.getElementById('searchResults').innerHTML=r.map(x=>`
-    <a class="search-result-item" href="${x.url}" target="_blank" rel="noopener">
-      <div class="search-result-icon squircle" style="background:${getColor(x.title)}">
-        <img src="${getFavicon(x.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${x.title.charAt(0)}'">
-      </div>
-      <div class="search-result-info">
-        <div class="search-result-title">${x.title}</div>
-        <div class="search-result-url">${getDomain(x.url)} · ${x.folder}</div>
-      </div>
-    </a>`).join('');
+  cards.innerHTML=links.map(l=>
+    '<a class="macos-card" href="'+l.url+'" target="_blank" rel="noopener">'+
+    '<div class="macos-card-favicon" style="background:'+getColor(l.title)+'">'+faviconImg(l.url,l.title.charAt(0))+'</div>'+
+    '<div class="macos-card-info"><div class="macos-card-title">'+l.title+'</div><div class="macos-card-domain">'+getDomain(l.url)+(l.folder?' · '+l.folder:'')+'</div></div></a>'
+  ).join('');
+}
+
+let macSearchTimer=null;
+function macSearch(q){
+  clearTimeout(macSearchTimer);
+  macSearchTimer=setTimeout(()=>renderMacCards(q),200);
+}
+
+// ========== Global Search ==========
+function openGlobalSearch(){
+  document.getElementById('searchOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('globalSearchInput').focus(),100);
+}
+function closeGlobalSearch(){
+  document.getElementById('searchOverlay').classList.remove('open');
+  document.getElementById('globalSearchInput').value='';
+  document.getElementById('globalSearchResults').innerHTML='';
+}
+let gsTimer=null;
+function globalSearch(q){
+  clearTimeout(gsTimer);
+  gsTimer=setTimeout(()=>{
+    const results=searchLinks(q);
+    const el=document.getElementById('globalSearchResults');
+    if(!q.trim()||!results||!results.length){
+      el.innerHTML=q.trim()?'<div class="sr-empty">没有找到结果</div>':'';
+      return;
+    }
+    el.innerHTML=results.map(r=>
+      '<a class="sr-item" href="'+r.url+'" target="_blank" rel="noopener">'+
+      '<div class="sr-item-favicon" style="background:'+getColor(r.title)+'">'+faviconImg(r.url,r.title.charAt(0))+'</div>'+
+      '<div class="sr-item-info"><div class="sr-item-title">'+r.title+'</div><div class="sr-item-sub">'+getDomain(r.url)+' · '+r.folder+'</div></div></a>'
+    ).join('');
+  },150);
 }
 
 // ========== Clock ==========
 function updateClock(){
   const n=new Date();
-  document.getElementById('clock').textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  const t=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+  const el=document.getElementById('macClock');
+  if(el)el.textContent=t;
 }
-
-// ========== Touch Gestures ==========
-let tsy=0;
-document.addEventListener('touchstart',e=>{tsy=e.touches[0].clientY},{passive:true});
-document.addEventListener('touchend',e=>{
-  const tey=e.changedTouches[0].clientY;
-  if(tsy-tey>80&&!document.querySelector('.folder-overlay.open')&&!document.querySelector('.search-overlay.open')){
-    openSearch();
-  }
-},{passive:true});
 
 // ========== Keyboard ==========
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
-    closeFolder();
-    closeSearch();
+    closeGlobalSearch();
+  }
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){
+    e.preventDefault();
+    openGlobalSearch();
   }
 });
 
 // ========== Init ==========
-renderDesktop();
-renderDock();
+renderMac();
 updateClock();
 setInterval(updateClock,10000);
 </script>
