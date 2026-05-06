@@ -337,15 +337,34 @@ function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5
 function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{return u}}
 
 // ========== Multi-source Favicon ==========
+// 优先级：favicon.im(256px高清) > Google FaviconV2 > Google S2 > DuckDuckGo > 自建服务 > 直接获取
+// 自建服务部署文档：https://github.com/mat/besticon
+const FAVICON_CONFIG={
+  // 默认使用 favicon.im（推荐，Cloudflare CDN，99.9%可用）
+  primary:'favicon.im',
+  // 自建服务地址（如需自建，取消注释并填写地址）
+  // selfHosted:'https://your-besticon-service.com/icon',
+};
 function getFaviconSources(url){
   try{
     const d=new URL(url).hostname;
-    return [
+    const sources=[
+      // 1. favicon.im - 256px高清，Cloudflare加速
+      'https://favicon.im/'+d+'?larger=true',
+      // 2. Google FaviconV2 - 128px高清
       'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://'+d+'&size=128',
+      // 3. Google S2 - 128px
       'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
+      // 4. DuckDuckGo
       'https://icons.duckduckgo.com/ip3/'+d+'.ico',
-      url.replace(/\/.*$/,'')+'/favicon.ico',
     ];
+    // 5. 自建服务（如果配置了）
+    if(FAVICON_CONFIG.selfHosted){
+      sources.push(FAVICON_CONFIG.selfHosted+'?url='+encodeURIComponent(url)+'&size=128');
+    }
+    // 6. 直接获取网站favicon
+    sources.push(url.replace(/\/.*$/,'')+'/favicon.ico');
+    return sources;
   }catch{return[]}
 }
 function getFavicon(u){const s=getFaviconSources(u);return s.length?s[0]:''}
