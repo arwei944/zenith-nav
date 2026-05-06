@@ -2,691 +2,450 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Zenith Nav</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ios-wallpaper:linear-gradient(145deg,#1a1a2e 0%,#16213e 30%,#0f3460 60%,#533483 100%);
+  --ios-label-shadow:0 0.5px 2px rgba(0,0,0,0.6);
+  --ios-icon-size:60px;
+  --ios-icon-radius:13.5px;
+  --ios-cols:4;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;
+  background:var(--ios-wallpaper);
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+  user-select:none;
+}
 
-  :root {
-    --bg: #f5f5f7;
-    --card: rgba(255,255,255,0.72);
-    --card-hover: rgba(255,255,255,0.92);
-    --text: #1d1d1f;
-    --text-secondary: #86868b;
-    --border: rgba(0,0,0,0.06);
-    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
-    --shadow-hover: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
-    --radius: 14px;
-    --transition: 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-  }
+.status-bar{
+  flex-shrink:0;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 24px 8px;
+  font-size:14px;font-weight:600;
+  text-shadow:var(--ios-label-shadow);
+}
+.status-bar-time{font-variant-numeric:tabular-nums}
+.status-bar-icons{display:flex;gap:6px;align-items:center;font-size:12px}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+.desktop{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:20px 24px 10px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.desktop::-webkit-scrollbar{display:none}
 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+.icon-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--ios-cols),1fr);
+  gap:24px 0;
+  justify-items:center;
+  padding-bottom:16px;
+}
 
-  /* macOS Menu Bar */
-  .menubar {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    backdrop-filter: saturate(180%) blur(20px);
-    -webkit-backdrop-filter: saturate(180%) blur(20px);
-    background: rgba(245,245,247,0.78);
-    border-bottom: 0.5px solid var(--border);
-    padding: 0 24px;
-    height: 52px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+.app-icon{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  width:75px;
+  text-decoration:none;color:#fff;
+  cursor:pointer;
+  transition:transform 0.1s;
+}
+.app-icon:active{transform:scale(0.88)}
 
-  .menubar-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
+.app-icon-img{
+  width:var(--ios-icon-size);height:var(--ios-icon-size);
+  border-radius:var(--ios-icon-radius);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.25),inset 0 0.5px 0 rgba(255,255,255,0.15);
+  overflow:hidden;
+}
+.app-icon-img img{width:100%;height:100%;object-fit:cover;border-radius:var(--ios-icon-radius)}
 
-  .menubar-search {
-    position: relative;
-    width: 220px;
-  }
+.app-icon-label{
+  font-size:11px;font-weight:400;
+  text-align:center;
+  text-shadow:var(--ios-label-shadow);
+  max-width:75px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  line-height:1.2;
+}
 
-  .menubar-search input {
-    width: 100%;
-    padding: 6px 12px 6px 30px;
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    background: rgba(0,0,0,0.03);
-    font-size: 12px;
-    font-family: inherit;
-    color: var(--text);
-    outline: none;
-    transition: var(--transition);
-  }
+.folder{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  width:75px;cursor:pointer;
+  transition:transform 0.1s;
+}
+.folder:active{transform:scale(0.88)}
 
-  .menubar-search input:focus {
-    background: #fff;
-    border-color: rgba(0,122,255,0.4);
-    box-shadow: 0 0 0 3px rgba(0,122,255,0.12);
-    width: 280px;
-  }
+.folder-icon{
+  width:var(--ios-icon-size);height:var(--ios-icon-size);
+  border-radius:var(--ios-icon-radius);
+  background:rgba(255,255,255,0.18);
+  backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+  border:0.5px solid rgba(255,255,255,0.06);
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:2px;padding:10px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  position:relative;overflow:hidden;
+}
+.folder-icon::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:rgba(255,255,255,0.06);
+  border-radius:var(--ios-icon-radius) var(--ios-icon-radius) 0 0;
+}
 
-  .menubar-search svg {
-    position: absolute;
-    left: 9px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 13px;
-    height: 13px;
-    color: var(--text-secondary);
-  }
+.folder-mini-icon{
+  width:100%;height:100%;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
 
-  .menubar-time {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
+.folder-label{
+  font-size:11px;font-weight:400;
+  text-align:center;
+  text-shadow:var(--ios-label-shadow);
+  max-width:75px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 
-  /* Main Content */
-  .content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 32px 24px 64px;
-  }
+.folder-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
+  display:none;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;
+  animation:folderIn 0.25s ease;
+}
+.folder-overlay.open{display:flex}
+@keyframes folderIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
 
-  /* Quick Launch - Dock Style */
-  .dock {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 16px 20px;
-    margin-bottom: 36px;
-    background: var(--card);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    border: 0.5px solid var(--border);
-    overflow-x: auto;
-  }
+.folder-panel{
+  width:100%;max-width:360px;
+  background:rgba(255,255,255,0.14);
+  backdrop-filter:blur(50px);-webkit-backdrop-filter:blur(50px);
+  border-radius:20px;
+  border:0.5px solid rgba(255,255,255,0.1);
+  padding:20px 16px 16px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.4);
+}
+.folder-panel-title{text-align:center;font-size:20px;font-weight:500;margin-bottom:16px;text-shadow:var(--ios-label-shadow)}
+.folder-panel-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 0;justify-items:center}
+.folder-close{text-align:center;margin-top:16px;font-size:13px;color:rgba(255,255,255,0.5);cursor:pointer}
 
-  .dock-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px 6px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--text);
-    transition: var(--transition);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+.search-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,0.85);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  display:none;flex-direction:column;
+  padding:60px 20px 20px;
+  animation:fadeIn 0.2s ease;
+}
+.search-overlay.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-  .dock-item:hover {
-    background: rgba(0,0,0,0.04);
-    transform: translateY(-2px) scale(1.05);
-  }
+.search-box{width:100%;max-width:500px;margin:0 auto 24px;position:relative}
+.search-box input{
+  width:100%;padding:12px 16px 12px 42px;
+  border:none;border-radius:12px;
+  background:rgba(255,255,255,0.1);
+  color:#fff;font-size:16px;font-family:inherit;outline:none;
+}
+.search-box input::placeholder{color:rgba(255,255,255,0.35)}
+.search-box svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:rgba(255,255,255,0.4)}
+.search-cancel{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.6);
+  font-size:13px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;display:none;
+}
+.search-cancel.show{display:block}
 
-  .dock-item:active {
-    transform: translateY(0) scale(0.98);
-  }
+.search-results{flex:1;overflow-y:auto;max-width:500px;margin:0 auto;width:100%;scrollbar-width:none}
+.search-results::-webkit-scrollbar{display:none}
 
-  .dock-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: linear-gradient(145deg, #e8e8ed, #d2d2d7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 0.5px 0 rgba(255,255,255,0.6);
-    overflow: hidden;
-  }
+.search-result-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;border-radius:10px;
+  cursor:pointer;transition:background 0.15s;
+  text-decoration:none;color:#fff;
+}
+.search-result-item:hover{background:rgba(255,255,255,0.06)}
+.search-result-icon{
+  width:36px;height:36px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);
+}
+.search-result-icon img{width:100%;height:100%;border-radius:8px;object-fit:cover}
+.search-result-info{flex:1;min-width:0}
+.search-result-title{font-size:15px;font-weight:400}
+.search-result-url{font-size:12px;color:rgba(255,255,255,0.4);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-empty{text-align:center;padding:40px 0;color:rgba(255,255,255,0.3);font-size:15px}
 
-  .dock-icon img {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-  }
+.dock{flex-shrink:0;padding:8px 20px 28px;display:flex;justify-content:center}
+.dock-inner{
+  display:flex;gap:18px;padding:10px 16px;
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
+  border-radius:24px;
+  border:0.5px solid rgba(255,255,255,0.08);
+  box-shadow:0 0 40px rgba(0,0,0,0.3);
+}
+.dock .app-icon{width:60px}
+.dock .app-icon-img{width:52px;height:52px;font-size:24px;border-radius:12px}
+.dock .app-icon-label{font-size:10px}
 
-  .dock-label {
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    max-width: 56px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: center;
-  }
-
-  /* Tab Bar */
-  .tab-bar {
-    display: flex;
-    gap: 2px;
-    padding: 4px;
-    margin-bottom: 24px;
-    background: rgba(0,0,0,0.03);
-    border-radius: 12px;
-    border: 0.5px solid var(--border);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tab-bar::-webkit-scrollbar { display: none; }
-
-  .tab-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 7px 14px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    font-family: inherit;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: var(--transition);
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .tab-btn:hover {
-    background: rgba(0,0,0,0.04);
-    color: var(--text);
-  }
-
-  .tab-btn.active {
-    background: #fff;
-    color: var(--text);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0.5px 0 rgba(0,0,0,0.04);
-  }
-
-  .tab-btn .tab-emoji {
-    font-size: 12px;
-  }
-
-  .tab-btn .tab-count {
-    font-size: 10px;
-    color: var(--text-secondary);
-    background: rgba(0,0,0,0.04);
-    padding: 1px 5px;
-    border-radius: 6px;
-    font-weight: 400;
-  }
-
-  .tab-btn.active .tab-count {
-    background: rgba(0,0,0,0.06);
-  }
-
-  /* Tab Content */
-  .tab-panel {
-    display: none;
-    animation: fadeIn 0.25s ease;
-  }
-  .tab-panel.active { display: block; }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 0 4px;
-  }
-
-  .section-icon {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-  }
-
-  .section-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--text);
-  }
-
-  .section-count {
-    font-size: 11px;
-    color: var(--text-secondary);
-    font-weight: 400;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Link Grid */
-  .link-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
-  }
-
-  .link-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 10px;
-    border: 0.5px solid var(--border);
-    text-decoration: none;
-    color: var(--text);
-    transition: var(--transition);
-    cursor: pointer;
-    box-shadow: var(--shadow);
-  }
-
-  .link-item:hover {
-    background: var(--card-hover);
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-1px);
-  }
-
-  .link-item:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow);
-  }
-
-  .link-favicon {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
-    background: linear-gradient(145deg, #e8e8ed, #d2d2d7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 0.5px 1px rgba(0,0,0,0.08), inset 0 0.5px 0 rgba(255,255,255,0.5);
-    overflow: hidden;
-  }
-
-  .link-favicon img {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-  }
-
-  .link-info {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .link-title {
-    font-size: 12.5px;
-    font-weight: 500;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .link-desc {
-    font-size: 10.5px;
-    color: var(--text-secondary);
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    margin-top: 1px;
-  }
-
-  .link-arrow {
-    color: #c7c7cc;
-    font-size: 14px;
-    flex-shrink: 0;
-    opacity: 0;
-    transition: var(--transition);
-  }
-
-  .link-item:hover .link-arrow {
-    opacity: 1;
-    color: var(--text-secondary);
-  }
-
-  /* Empty State */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-secondary);
-    font-size: 14px;
-  }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    padding: 32px 20px;
-    color: var(--text-secondary);
-    font-size: 11px;
-  }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .content { padding: 20px 16px 48px; }
-    .link-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-    .menubar-search { width: 160px; }
-    .menubar-search input:focus { width: 200px; }
-    .dock { gap: 4px; padding: 12px 14px; }
-    .dock-item { padding: 6px 8px 4px; }
-    .dock-icon { width: 36px; height: 36px; }
-  }
+@media(min-width:500px){:root{--ios-cols:5;--ios-icon-size:64px}}
+@media(min-width:768px){:root{--ios-cols:6;--ios-icon-size:68px}.app-icon{width:85px}.folder{width:85px}.app-icon-label,.folder-label{max-width:85px}}
+@media(min-width:1024px){:root{--ios-cols:7;--ios-icon-size:72px}.app-icon{width:90px}.folder{width:90px}.app-icon-label,.folder-label{max-width:90px}}
 </style>
 </head>
 <body>
 
-<div class="menubar">
-  <div class="menubar-title">Zenith</div>
-  <div class="menubar-search">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-      <circle cx="6.5" cy="6.5" r="5"/><path d="m11 11 3.5 3.5"/>
-    </svg>
-    <input type="text" id="searchInput" placeholder="搜索链接..." oninput="filterLinks()">
+<div class="status-bar">
+  <div class="status-bar-time" id="clock">9:41</div>
+  <div class="status-bar-icons"><span>📶</span><span>🔋</span></div>
+</div>
+
+<div class="desktop" id="desktop"></div>
+
+<div class="dock">
+  <div class="dock-inner" id="dock"></div>
+</div>
+
+<div class="folder-overlay" id="folderOverlay" onclick="closeFolder(event)">
+  <div class="folder-panel" onclick="event.stopPropagation()">
+    <div class="folder-panel-title" id="folderTitle"></div>
+    <div class="folder-panel-grid" id="folderGrid"></div>
+    <div class="folder-close" onclick="closeFolder()">关闭</div>
   </div>
-  <div class="menubar-time" id="clock"></div>
 </div>
 
-<div class="content">
-  <div class="dock" id="dock"></div>
-  <div class="tab-bar" id="tabBar"></div>
-  <div id="tabPanels"></div>
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="6.5"/><path d="m14 14 4 4"/></svg>
+    <input type="text" id="searchInput" placeholder="搜索" oninput="doSearch()" autofocus>
+    <button class="search-cancel" id="searchCancel" onclick="closeSearch()">取消</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
 </div>
-
-<div class="footer">Zenith Nav · 币圈导航站</div>
 
 <script>
-const DATA = {
-  quickLaunch: [
-    { title: "dexscreener", url: "https://dexscreener.com/", emoji: "📊" },
-    { title: "CMC", url: "https://coinmarketcap.com", emoji: "📈" },
-    { title: "coingecko", url: "https://www.coingecko.com/zh/categories", emoji: "🦎" },
-    { title: "Debank", url: "https://debank.com", emoji: "🏦" },
-    { title: "defillama", url: "https://defillama.com", emoji: "🦙" },
-    { title: "stargate", url: "https://stargate.finance/transfer", emoji: "⭐" },
-    { title: "galxe", url: "https://app.galxe.com/", emoji: "🌌" },
-    { title: "tradingview", url: "https://cn.tradingview.com/chart/", emoji: "📉" },
-    { title: "basescan", url: "https://basescan.org/", emoji: "🔍" },
-    { title: "oklink", url: "https://www.oklink.com/zh-hans/base", emoji: "🔗" },
+const COLORS=['#FF3B30','#FF9500','#FFCC00','#34C759','#00C7BE','#30B0C7','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#64D2FF','#FF6482','#5AC8FA','#FFD60A','#32D74B','#BF5AF2'];
+function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORS[Math.abs(h)%COLORS.length]}
+function getFavicon(u){try{return`https://www.google.com/s2/favicons?domain=${new URL(u).hostname}&sz=128`}catch{return''}}
+function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{return u}}
+
+const DATA={
+  dock:[
+    {title:"dexscreener",url:"https://dexscreener.com/",emoji:"📊",color:"#1E90FF"},
+    {title:"CMC",url:"https://coinmarketcap.com",emoji:"📈",color:"#4A90D9"},
+    {title:"coingecko",url:"https://www.coingecko.com/zh/categories",emoji:"🦎",color:"#8DC63F"},
+    {title:"Debank",url:"https://debank.com",emoji:"🏦",color:"#4A6CF7"},
+    {title:"defillama",url:"https://defillama.com",emoji:"🦙",color:"#6C5CE7"},
+    {title:"stargate",url:"https://stargate.finance/transfer",emoji:"⭐",color:"#00B4D8"},
+    {title:"galxe",url:"https://app.galxe.com/",emoji:"🌌",color:"#7B68EE"},
+    {title:"tradingview",url:"https://cn.tradingview.com/chart/",emoji:"📉",color:"#2D6A4F"},
+    {title:"basescan",url:"https://basescan.org/",emoji:"🔍",color:"#0052FF"},
+    {title:"oklink",url:"https://www.oklink.com/zh-hans/base",emoji:"🔗",color:"#3B82F6"},
   ],
-  categories: [
-    { name: "当下常用", icon: "⭐", color: "#FF9F0A", links: [
-      { title: "三毛机场", url: "https://xn--ehqx7tcnnope.com/#/dashboard" },
-      { title: "性价比机场 - 1元40G", url: "https://xn--6nq44r2uh9rhj7f.com/#/knowledge" },
-      { title: "极速机场 - 一元机场1", url: "https://jsjc.cfd/#/dashboard" },
-      { title: "币安aplana - 空投aplna", url: "https://litangdingzhen.me/" },
-      { title: "hugging - 交易统计分析", url: "https://www.hugging.com/zh/dashboard" },
-      { title: "baalpha - alpha刷分模拟器", url: "https://baalpha.xuemusi.com/" },
+  folders:[
+    {name:"当下常用",icon:"⭐",links:[
+      {title:"三毛机场",url:"https://xn--ehqx7tcnnope.com/#/dashboard"},
+      {title:"性价比机场",url:"https://xn--6nq44r2uh9rhj7f.com/#/knowledge"},
+      {title:"极速机场",url:"https://jsjc.cfd/#/dashboard"},
+      {title:"币安aplana",url:"https://litangdingzhen.me/"},
+      {title:"hugging",url:"https://www.hugging.com/zh/dashboard"},
+      {title:"baalpha",url:"https://baalpha.xuemusi.com/"},
     ]},
-    { name: "网站相关", icon: "🌐", color: "#007AFF", links: [
-      { title: "免费机场", url: "https://github.com/hwanz/SSR-V2ray-Trojan-vpn" },
-      { title: "极速机场 - 12R/y", url: "https://xn--mes358acgm99l.com/#/dashboard" },
-      { title: "赔钱机场 - 2.9R", url: "https://xn--mes358aby2apfg.com/#/plan" },
-      { title: "顶级机场 - 18R/年", url: "https://xn--mes358a9urctx.com/#/dashboard" },
-      { title: "湖北税务", url: "https://etax.hubei.chinatax.gov.cn/portal/" },
-      { title: "xlm云 - 16每年", url: "https://v2.ixlmo.com/index.php#/stage/dashboard" },
-      { title: "极速云 - 10r/m", url: "https://aq.safe301.lol/#/plan" },
-      { title: "辰迅云", url: "https://www.chenxunyun.com/agent/default.asp" },
-      { title: "namesilo - 域名提供商", url: "https://www.namesilo.com/" },
-      { title: "狗云 - 服务器提供商", url: "https://vm.dogyun.com/server/11032/resources" },
+    {name:"网站相关",icon:"🌐",links:[
+      {title:"免费机场",url:"https://github.com/hwanz/SSR-V2ray-Trojan-vpn"},
+      {title:"极速机场",url:"https://xn--mes358acgm99l.com/#/dashboard"},
+      {title:"赔钱机场",url:"https://xn--mes358aby2apfg.com/#/plan"},
+      {title:"顶级机场",url:"https://xn--mes358a9urctx.com/#/dashboard"},
+      {title:"湖北税务",url:"https://etax.hubei.chinatax.gov.cn/portal/"},
+      {title:"xlm云",url:"https://v2.ixlmo.com/index.php#/stage/dashboard"},
+      {title:"极速云",url:"https://aq.safe301.lol/#/plan"},
+      {title:"辰迅云",url:"https://www.chenxunyun.com/agent/default.asp"},
+      {title:"namesilo",url:"https://www.namesilo.com/"},
+      {title:"狗云",url:"https://vm.dogyun.com/server/11032/resources"},
     ]},
-    { name: "币圈导航", icon: "🧭", color: "#30D158", links: [
-      { title: "蚁穴web3", url: "https://antcave.club/" },
-      { title: "dexnav", url: "https://dexnav.com/" },
-      { title: "biquandh", url: "https://www.biquandh.com/" },
-      { title: "0xdh", url: "https://www.0xdh.vip/" },
-      { title: "币百度", url: "https://bibaidu.cn/" },
-      { title: "币圈直通车", url: "https://www.bqztc.com/" },
-      { title: "已火社区", url: "https://www.sihuo.club/" },
-      { title: "链路导航", url: "https://roweb3.com/" },
-      { title: "coinbk", url: "https://coinbk.xyz/" },
+    {name:"币圈导航",icon:"🧭",links:[
+      {title:"蚁穴web3",url:"https://antcave.club/"},{title:"dexnav",url:"https://dexnav.com/"},
+      {title:"biquandh",url:"https://www.biquandh.com/"},{title:"0xdh",url:"https://www.0xdh.vip/"},
+      {title:"币百度",url:"https://bibaidu.cn/"},{title:"币圈直通车",url:"https://www.bqztc.com/"},
+      {title:"已火社区",url:"https://www.sihuo.club/"},{title:"链路导航",url:"https://roweb3.com/"},
+      {title:"coinbk",url:"https://coinbk.xyz/"},
     ]},
-    { name: "杠杆农场", icon: "🌾", color: "#FFD60A", links: [
-      { title: "vfat.io - NO.4聚合农场", url: "https://vfat.io/yield" },
-      { title: "beefy - No.1聚合农场", url: "https://app.beefy.com/" },
-      { title: "harvest - No.3聚合农场", url: "https://app.harvest.finance/farms" },
-      { title: "baklava - NO.2聚合农场", url: "https://baklava.space/vaults/" },
-      { title: "tarot - 多链杠杆农场（主要base)", url: "https://www.tarot.to/" },
-      { title: "zkfox - zk杠杆农场2", url: "https://zkfox.io/#/" },
-      { title: "axly - waves杠杆农场", url: "https://app.axly.io/" },
-      { title: "vivaleva - zkSync杠杆农场", url: "https://vivaleva.com/farm/" },
-      { title: "deltaprime - arb杠杆农场3", url: "https://deltaprime.io/" },
-      { title: "stellaxyz - arb杠杆农场2", url: "https://app.stellaxyz.io/" },
-      { title: "mole - sui杠杆农场", url: "https://app.mole.fi/farm" },
-      { title: "single - arb杠杆农场", url: "https://app.singlefinance.io/farm" },
-      { title: "extrafi - base+op杠杆农场", url: "https://app.extrafi.io/farm" },
+    {name:"杠杆农场",icon:"🌾",links:[
+      {title:"vfat.io",url:"https://vfat.io/yield"},{title:"beefy",url:"https://app.beefy.com/"},
+      {title:"harvest",url:"https://app.harvest.finance/farms"},{title:"baklava",url:"https://baklava.space/vaults/"},
+      {title:"tarot",url:"https://www.tarot.to/"},{title:"zkfox",url:"https://zkfox.io/#/"},
+      {title:"axly",url:"https://app.axly.io/"},{title:"vivaleva",url:"https://vivaleva.com/farm/"},
+      {title:"deltaprime",url:"https://deltaprime.io/"},{title:"stellaxyz",url:"https://app.stellaxyz.io/"},
+      {title:"mole",url:"https://app.mole.fi/farm"},{title:"single",url:"https://app.singlefinance.io/farm"},
+      {title:"extrafi",url:"https://app.extrafi.io/farm"},
     ]},
-    { name: "Gamefi", icon: "🎮", color: "#BF5AF2", links: [
-      { title: "mobox - 游戏盒子", url: "https://www.mobox.io/#/" },
+    {name:"Gamefi",icon:"🎮",links:[{title:"mobox",url:"https://www.mobox.io/#/"}]},
+    {name:"web3赌场",icon:"🎰",links:[
+      {title:"rollbit",url:"https://rollbit.com/"},{title:"polymarket",url:"https://polymarket.com/"},
+      {title:"tg.casino",url:"https://www.tg.casino/en"},{title:"luckyblock",url:"https://www.luckyblock.com/en"},
+      {title:"metawin",url:"https://metawin.com/"},
     ]},
-    { name: "web3赌场", icon: "🎰", color: "#FF375F", links: [
-      { title: "rollbit", url: "https://rollbit.com/" },
-      { title: "polymarket - 去中心化投注市场", url: "https://polymarket.com/" },
-      { title: "tg.casino", url: "https://www.tg.casino/en" },
-      { title: "luckyblock", url: "https://www.luckyblock.com/en" },
-      { title: "metawin", url: "https://metawin.com/" },
+    {name:"跨链工具",icon:"🔗",links:[
+      {title:"minibridge",url:"https://minibridge.chaineye.tools/reward"},
+      {title:"debridge",url:"https://app.debridge.finance/r/14718"},
+      {title:"stargate",url:"https://stargate.finance/transfer"},
     ]},
-    { name: "跨链工具", icon: "🔗", color: "#64D2FF", links: [
-      { title: "minibridge", url: "https://minibridge.chaineye.tools/reward" },
-      { title: "debridge - 明牌空投（100p/u)", url: "https://app.debridge.finance/r/14718" },
-      { title: "stargate - NO.1跨链工具", url: "https://stargate.finance/transfer" },
+    {name:"行情查看",icon:"📊",links:[
+      {title:"valuescan",url:"https://www.valuescan.io"},{title:"hugging",url:"https://www.hugging.com/zh"},
+      {title:"nftsniper",url:"https://www.nftsniper.club"},{title:"market-cap",url:"https://companiesmarketcap.com/assets-by-market-cap"},
+      {title:"looknode",url:"https://www.looknode.com"},{title:"btc123",url:"https://history.btc123.fans"},
+      {title:"VC投资回报",url:"https://dune.com/dyorcrypto/coinlist22"},{title:"coincarp",url:"https://www.coincarp.com/zh"},
+      {title:"coingecko",url:"https://www.coingecko.com/zh/categories"},{title:"CMC",url:"https://coinmarketcap.com"},
+      {title:"tradingview",url:"https://cn.tradingview.com/chart/r0DhubZp/?symbol=BITSTAMP%3ABTCUSD"},
+      {title:"rootdata",url:"https://www.rootdata.com/zh"},
     ]},
-    { name: "行情查看", icon: "📊", color: "#FF9F0A", links: [
-      { title: "valuescan - 币种分析", url: "https://www.valuescan.io" },
-      { title: "hugging - 合约资产管理", url: "https://www.hugging.com/zh" },
-      { title: "nftsniper - 行情查看", url: "https://www.nftsniper.club" },
-      { title: "market-cap - 市值排名", url: "https://companiesmarketcap.com/assets-by-market-cap" },
-      { title: "looknode - btc数据查看", url: "https://www.looknode.com" },
-      { title: "btc123 - btc历史价格", url: "https://history.btc123.fans" },
-      { title: "VC投资回报", url: "https://dune.com/dyorcrypto/coinlist22" },
-      { title: "coincarp - NO.3币圈行情查看", url: "https://www.coincarp.com/zh" },
-      { title: "coingecko - NO.2行情查看", url: "https://www.coingecko.com/zh/categories" },
-      { title: "CMC - NO.1币圈行情查看", url: "https://coinmarketcap.com" },
-      { title: "tradingview - 全市场行情查看", url: "https://cn.tradingview.com/chart/r0DhubZp/?symbol=BITSTAMP%3ABTCUSD" },
-      { title: "rootdata - NO.1加密项目数据库", url: "https://www.rootdata.com/zh" },
+    {name:"农场导航",icon:"🌱",links:[
+      {title:"toupee",url:"https://www.toupee.tech"},{title:"tokenterminal",url:"https://tokenterminal.com/terminal"},
+      {title:"defillama",url:"https://defillama.com"},
     ]},
-    { name: "农场导航", icon: "🌱", color: "#30D158", links: [
-      { title: "toupee - NO.4base农场", url: "https://www.toupee.tech" },
-      { title: "tokenterminal - 协议费用查看", url: "https://tokenterminal.com/terminal" },
-      { title: "defillama - NO.1defi查看", url: "https://defillama.com" },
+    {name:"钱包监控",icon:"👁",links:[
+      {title:"memego",url:"https://memego.ai"},{title:"blum",url:"https://www.blum.io/zh"},
+      {title:"metasleuth",url:"https://metasleuth.io/plans"},{title:"3dogs",url:"https://3dogs.io/zh-CN"},
+      {title:"trendx",url:"https://app.trendx.tech"},{title:"icrypto",url:"https://icrypto.ai/zh/ethereum"},
+      {title:"arkham",url:"https://platform.arkhamintelligence.com"},{title:"notum",url:"https://app.notum.ai"},
+      {title:"dbotx",url:"https://dbotx.com/dashboard/zh"},{title:"cielo",url:"https://app.cielo.finance/feed"},
+      {title:"gmgn.ai",url:"https://gmgn.ai/?chain=sol"},{title:"degenknows",url:"https://www.degenknows.io/smart-traders"},
+      {title:"Debank",url:"https://debank.com/profile/0xd77cb38c3b3261779acc15dcacd54b5db9bcec72"},
+      {title:"diting",url:"https://pc.diting.ai/market?tokenPairAddress=0x6c01242b5e039ab0cd20d7e7e249920fe03c3cfa&chain=arbitrum"},
     ]},
-    { name: "钱包监控", icon: "👁", color: "#5E5CE6", links: [
-      { title: "memego - 聪明钱监控", url: "https://memego.ai" },
-      { title: "blum - 聪明钱包监控", url: "https://www.blum.io/zh" },
-      { title: "metasleuth - 全链聪明钱监控", url: "https://metasleuth.io/plans" },
-      { title: "3dogs - 聪明钱监控", url: "https://3dogs.io/zh-CN" },
-      { title: "trendx - 聪明钱监控", url: "https://app.trendx.tech" },
-      { title: "icrypto - eth聪明钱监控", url: "https://icrypto.ai/zh/ethereum" },
-      { title: "arkham - NO.2EVm钱包监控", url: "https://platform.arkhamintelligence.com" },
-      { title: "notum - EVM系资产看板", url: "https://app.notum.ai" },
-      { title: "dbotx - 功能强大的全链监控工具", url: "https://dbotx.com/dashboard/zh" },
-      { title: "cielo - sol链钱包监控", url: "https://app.cielo.finance/feed" },
-      { title: "gmgn.ai - sol链钱包监控", url: "https://gmgn.ai/?chain=sol" },
-      { title: "degenknows - NFT聪明钱监控", url: "https://www.degenknows.io/smart-traders" },
-      { title: "Debank - evm链监控", url: "https://debank.com/profile/0xd77cb38c3b3261779acc15dcacd54b5db9bcec72" },
-      { title: "diting - evm链监控", url: "https://pc.diting.ai/market?tokenPairAddress=0x6c01242b5e039ab0cd20d7e7e249920fe03c3cfa&chain=arbitrum" },
+    {name:"效率工具",icon:"⚡",links:[
+      {title:"checkdrop",url:"https://checkdrop.byzantine.fi"},{title:"0xscope",url:"https://ai.0xscope.com"},
+      {title:"assetdash",url:"https://members.assetdash.com/portfolio"},{title:"logearn",url:"https://logearn.com/cn"},
+      {title:"matcha",url:"https://matcha.xyz"},{title:"0xscop",url:"https://scan.0xscope.com/home?network=base"},
+      {title:"cpbox",url:"https://www.cpbox.io/cn"},{title:"hacked",url:"https://hacked.slowmist.io"},
+      {title:"coindar",url:"https://coindar.org/zh-cn"},{title:"token.unlocks",url:"https://token.unlocks.app"},
+      {title:"cointool",url:"https://cointool.app/multiSender/eth"},{title:"mct",url:"https://mct.xyz"},
     ]},
-    { name: "效率工具", icon: "⚡", color: "#FF9F0A", links: [
-      { title: "checkdrop - 空投检查", url: "https://checkdrop.byzantine.fi" },
-      { title: "0xscope. - 资产看板", url: "https://ai.0xscope.com" },
-      { title: "assetdash - 资产看板", url: "https://members.assetdash.com/portfolio" },
-      { title: "logearn - 跟单交易", url: "https://logearn.com/cn" },
-      { title: "matcha - 全链交易DEX", url: "https://matcha.xyz" },
-      { title: "0xscop - 区块数据浏览", url: "https://scan.0xscope.com/home?network=base" },
-      { title: "dbotx - NO.2快速交易", url: "https://dbotx.com/zh" },
-      { title: "cpbox - 批量工具", url: "https://www.cpbox.io/cn" },
-      { title: "hacked.slowmist - 被黑统计", url: "https://hacked.slowmist.io" },
-      { title: "coindar - 币圈日历", url: "https://coindar.org/zh-cn" },
-      { title: "token.unlocks - 代币解锁时间表", url: "https://token.unlocks.app" },
-      { title: "cointool.app - 批量操作工具", url: "https://cointool.app/multiSender/eth" },
-      { title: "mct - 科学家工具", url: "https://mct.xyz" },
+    {name:"SOL生态",icon:"◎",links:[
+      {title:"ape.pro",url:"https://ape.pro"},{title:"pump.fun",url:"https://pump.fun/board"},
+      {title:"hellomoon",url:"https://www.hellomoon.io/solana"},{title:"hawksight",url:"https://www.hawksight.co/strategies"},
+      {title:"1intro",url:"https://app.1intro.com/1lbp"},{title:"solsale",url:"https://solsale.app/presale/all"},
+      {title:"gempad",url:"https://gempad.app/presale/all"},{title:"birdeye",url:"https://birdeye.so/user/profile"},
+      {title:"solana",url:"https://solana.com/zh"},
     ]},
-    { name: "SOL生态", icon: "◎", color: "#9945FF", links: [
-      { title: "ape.pro - sol交易工具", url: "https://ape.pro" },
-      { title: "pump.fun - sol发射器", url: "https://pump.fun/board" },
-      { title: "hellomoon - sol生态查看", url: "https://www.hellomoon.io/solana" },
-      { title: "hawksight - sol收益聚合", url: "https://www.hawksight.co/strategies" },
-      { title: "1intro - 预售平台", url: "https://app.1intro.com/1lbp" },
-      { title: "solsale - 预售平台2", url: "https://solsale.app/presale/all" },
-      { title: "gempad - 预售平台1", url: "https://gempad.app/presale/all" },
-      { title: "birdeye - sol行情查看+钱包监控", url: "https://birdeye.so/user/profile" },
-      { title: "solana - sol生态合集", url: "https://solana.com/zh" },
+    {name:"sui生态",icon:"💧",links:[
+      {title:"flameswap",url:"https://flameswap.io/#/farm"},{title:"bluemove",url:"https://dex.bluemove.net/farms"},
+      {title:"flowx",url:"https://flowx.finance/faas"},{title:"cetus",url:"https://app.cetus.zone"},
+      {title:"turbos",url:"https://app.turbos.finance/#/pools"},
     ]},
-    { name: "sui生态", icon: "💧", color: "#4DA2FF", links: [
-      { title: "flameswap - NO.5DEX", url: "https://flameswap.io/#/farm" },
-      { title: "bluemove - NO.4DEX", url: "https://dex.bluemove.net/farms" },
-      { title: "flowx - NO.3DEX", url: "https://flowx.finance/faas" },
-      { title: "cetus - NO.2DEX", url: "https://app.cetus.zone" },
-      { title: "turbos - NO.1DEX", url: "https://app.turbos.finance/#/pools" },
+    {name:"blast生态",icon:"💥",links:[{title:"gamma",url:"https://app.gamma.xyz"}]},
+    {name:"ICO+IDO",icon:"🚀",links:[
+      {title:"chainbroker",url:"https://chainbroker.io"},{title:"cryptorank",url:"https://cryptorank.io/ico"},
+      {title:"icoanalytics",url:"https://icoanalytics.org/stats"},
     ]},
-    { name: "blast生态", icon: "💥", color: "#FF6B35", links: [
-      { title: "gamma", url: "https://app.gamma.xyz" },
+    {name:"新池查看",icon:"🏊",links:[
+      {title:"dex.guru",url:"https://dex.guru/markets"},{title:"avedex",url:"https://avedex.cc/home"},
+      {title:"apeoclock",url:"https://www.apeoclock.com/calls"},{title:"dextools",url:"https://www.dextools.io/app/cn/pairs"},
+      {title:"dexscreener",url:"https://dexscreener.com"},
     ]},
-    { name: "ICO+IDO", icon: "🚀", color: "#FF375F", links: [
-      { title: "chainbroker - ido3", url: "https://chainbroker.io" },
-      { title: "cryptorank - ico1", url: "https://cryptorank.io/ico" },
-      { title: "icoanalytics - ico5", url: "https://icoanalytics.org/stats" },
-    ]},
-    { name: "新池查看", icon: "🏊", color: "#64D2FF", links: [
-      { title: "dex.guru - 流动池查看", url: "https://dex.guru/markets" },
-      { title: "avedex - NO.4新池查看", url: "https://avedex.cc/home" },
-      { title: "apeoclock - NO.3新池查看", url: "https://www.apeoclock.com/calls" },
-      { title: "dextools - NO.2新池", url: "https://www.dextools.io/app/cn/pairs" },
-      { title: "dexscreener - NO.1新池", url: "https://dexscreener.com" },
-    ]},
-    { name: "base生态", icon: "🔵", color: "#0052FF", links: [
-      { title: "carbondefi - 交易策略", url: "https://www.carbondefi.xyz/zh/networks#base" },
-      { title: "infusion - NO.6base链DEX", url: "https://infusion.finance" },
-      { title: "oklink - 全链浏览器", url: "https://www.oklink.com/zh-hans/base" },
-      { title: "basescan.org - base官方浏览器", url: "https://basescan.org/tokens" },
-      { title: "l2beat - L2链数据查看", url: "https://l2beat.com" },
-      { title: "base.blockscout - 区块浏览器", url: "https://base.blockscout.com" },
+    {name:"base生态",icon:"🔵",links:[
+      {title:"carbondefi",url:"https://www.carbondefi.xyz/zh/networks#base"},
+      {title:"infusion",url:"https://infusion.finance"},{title:"oklink",url:"https://www.oklink.com/zh-hans/base"},
+      {title:"basescan",url:"https://basescan.org/tokens"},{title:"l2beat",url:"https://l2beat.com"},
+      {title:"blockscout",url:"https://base.blockscout.com"},
     ]},
   ]
 };
 
-function getFavicon(url) {
-  try { return `https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=64`; }
-  catch { return ''; }
-}
-
-function getDomain(url) {
-  try { return new URL(url).hostname.replace('www.',''); }
-  catch { return url; }
-}
-
-function render() {
-  // Dock
-  const dock = document.getElementById('dock');
-  dock.innerHTML = DATA.quickLaunch.map(item => `
-    <a class="dock-item" href="${item.url}" target="_blank" rel="noopener">
-      <div class="dock-icon">
-        <img src="${getFavicon(item.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${item.emoji}'">
-      </div>
-      <div class="dock-label">${item.title}</div>
-    </a>
-  `).join('');
-
-  // Tab Bar
-  const tabBar = document.getElementById('tabBar');
-  tabBar.innerHTML = DATA.categories.map((cat, i) => `
-    <button class="tab-btn${i===0?' active':''}" onclick="switchTab(${i})">
-      <span class="tab-emoji">${cat.icon}</span>
-      ${cat.name}
-      <span class="tab-count">${cat.links.length}</span>
-    </button>
-  `).join('');
-
-  // Tab Panels
-  const panels = document.getElementById('tabPanels');
-  panels.innerHTML = DATA.categories.map((cat, i) => `
-    <div class="tab-panel${i===0?' active':''}" id="panel-${i}">
-      <div class="section-header">
-        <div class="section-icon" style="background:${cat.color}15;color:${cat.color}">${cat.icon}</div>
-        <div class="section-title">${cat.name}</div>
-        <div class="section-count">${cat.links.length} 个链接</div>
-      </div>
-      <div class="link-grid">
-        ${cat.links.map(link => `
-          <a class="link-item" href="${link.url}" target="_blank" rel="noopener">
-            <div class="link-favicon">
-              <img src="${getFavicon(link.url)}" alt="" onerror="this.style.display='none'">
-            </div>
-            <div class="link-info">
-              <div class="link-title">${link.title}</div>
-              <div class="link-desc">${getDomain(link.url)}</div>
-            </div>
-            <div class="link-arrow">›</div>
-          </a>
-        `).join('')}
-      </div>
+function renderDesktop(){
+  const d=document.getElementById('desktop');
+  let h='<div class="icon-grid">';
+  h+=`<div class="app-icon" onclick="openSearch()">
+    <div class="app-icon-img" style="background:linear-gradient(145deg,#636366,#48484A)">
+      <svg width="28" height="28" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2"><circle cx="8.5" cy="8.5" r="6"/><path d="m14 14 4 4"/></svg>
     </div>
-  `).join('');
-}
-
-function switchTab(index) {
-  document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-    btn.classList.toggle('active', i === index);
+    <div class="app-icon-label">搜索</div>
+  </div>`;
+  DATA.folders.forEach((f,i)=>{
+    const p=f.links.slice(0,4).map(l=>`<div class="folder-mini-icon" style="background:${getColor(l.title)}">${l.title.charAt(0)}</div>`).join('');
+    h+=`<div class="folder" onclick="openFolder(${i})">
+      <div class="folder-icon">${p}</div>
+      <div class="folder-label">${f.name}</div>
+    </div>`;
   });
-  document.querySelectorAll('.tab-panel').forEach((panel, i) => {
-    panel.classList.toggle('active', i === index);
-  });
+  h+='</div>';
+  d.innerHTML=h;
 }
 
-function filterLinks() {
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  if (!q) {
-    // Reset: show first tab
-    switchTab(0);
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.style.display = '');
-    return;
-  }
-  // Show all panels, filter items
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('active'));
-  document.querySelectorAll('.tab-panel').forEach(panel => {
-    const items = panel.querySelectorAll('.link-item');
-    let visible = 0;
-    items.forEach(item => {
-      const text = item.textContent.toLowerCase();
-      const show = text.includes(q);
-      item.style.display = show ? '' : 'none';
-      if (show) visible++;
-    });
-    panel.style.display = visible ? '' : 'none';
-  });
-  // Hide tab bar during search
-  document.getElementById('tabBar').style.display = 'none';
-  if (!q) document.getElementById('tabBar').style.display = '';
+function renderDock(){
+  document.getElementById('dock').innerHTML=DATA.dock.map(i=>`
+    <a class="app-icon" href="${i.url}" target="_blank" rel="noopener">
+      <div class="app-icon-img" style="background:${i.color}">
+        <img src="${getFavicon(i.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${i.emoji}'">
+      </div>
+      <div class="app-icon-label">${i.title}</div>
+    </a>`).join('');
 }
 
-function updateClock() {
-  const now = new Date();
-  const opts = { month: 'short', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit' };
-  document.getElementById('clock').textContent = now.toLocaleString('zh-CN', opts);
+function openFolder(i){
+  const f=DATA.folders[i];
+  document.getElementById('folderTitle').textContent=f.name;
+  document.getElementById('folderGrid').innerHTML=f.links.map(l=>`
+    <a class="app-icon" href="${l.url}" target="_blank" rel="noopener" style="width:65px">
+      <div class="app-icon-img" style="background:${getColor(l.title)};width:52px;height:52px;font-size:22px;border-radius:11px">
+        <img src="${getFavicon(l.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${l.title.charAt(0)}'">
+      </div>
+      <div class="app-icon-label" style="max-width:65px;font-size:10px">${l.title}</div>
+    </a>`).join('');
+  document.getElementById('folderOverlay').classList.add('open');
 }
 
-render();
-updateClock();
-setInterval(updateClock, 10000);
+function closeFolder(e){if(e&&e.target!==document.getElementById('folderOverlay'))return;document.getElementById('folderOverlay').classList.remove('open')}
+
+function openSearch(){document.getElementById('searchOverlay').classList.add('open');setTimeout(()=>document.getElementById('searchInput').focus(),100)}
+function closeSearch(){document.getElementById('searchOverlay').classList.remove('open');document.getElementById('searchInput').value='';document.getElementById('searchResults').innerHTML='';document.getElementById('searchCancel').classList.remove('show')}
+
+function doSearch(){
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  document.getElementById('searchCancel').classList.toggle('show',q.length>0);
+  if(!q){document.getElementById('searchResults').innerHTML='';return}
+  const all=[];
+  DATA.folders.forEach(f=>f.links.forEach(l=>all.push({...l,folder:f.name})));
+  DATA.dock.forEach(l=>all.push({...l,folder:'Dock'}));
+  const r=all.filter(l=>l.title.toLowerCase().includes(q)||l.url.toLowerCase().includes(q)||l.folder.toLowerCase().includes(q));
+  if(!r.length){document.getElementById('searchResults').innerHTML='<div class="search-empty">没有找到结果</div>';return}
+  document.getElementById('searchResults').innerHTML=r.map(x=>`
+    <a class="search-result-item" href="${x.url}" target="_blank" rel="noopener">
+      <div class="search-result-icon" style="background:${getColor(x.title)}">
+        <img src="${getFavicon(x.url)}" alt="" onerror="this.style.display='none';this.parentElement.textContent='${x.title.charAt(0)}'">
+      </div>
+      <div class="search-result-info">
+        <div class="search-result-title">${x.title}</div>
+        <div class="search-result-url">${getDomain(x.url)} · ${x.folder}</div>
+      </div>
+    </a>`).join('');
+}
+
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+}
+
+let tsy=0;
+document.addEventListener('touchstart',e=>{tsy=e.touches[0].clientY});
+document.addEventListener('touchend',e=>{if(tsy-e.changedTouches[0].clientY>80&&!document.querySelector('.folder-overlay.open')&&!document.querySelector('.search-overlay.open'))openSearch()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeFolder();closeSearch()}});
+
+renderDesktop();renderDock();updateClock();setInterval(updateClock,10000);
 </script>
 </body>
 </html>
