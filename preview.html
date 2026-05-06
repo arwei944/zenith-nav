@@ -337,74 +337,63 @@ function getColor(n){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5
 function getDomain(u){try{return new URL(u).hostname.replace('www.','')}catch{return u}}
 
 // ========== Multi-source Favicon ==========
-// 智能6级回退链，成功率基于实际测试和行业数据估算
-// 总覆盖率：~99.5%（前3级）-> ~99.9%（全部）
+// 策略：优先使用 favicon.im（最可靠），直接获取作为备选
+// 
+// 为什么不用直接获取优先？
+// 1. 跨域问题：直接获取 /favicon.ico 会被 CORS 拦截
+// 2. 路径不确定：有些网站 favicon 在 /images/favicon.ico 或其他路径
+// 3. 第三方服务已经处理了这些问题
 //
-// ┌─────────────────────────────────────────────────────────────────┐
-// │ 层级 │ 服务              │ 单源成功率 │ 累计成功率 │ 特点        │
-// ├─────────────────────────────────────────────────────────────────┤
-// │ ①   │ 直接获取          │ ~50%    │ ~50%      │ 原始favicon │
-// │ ②   │ favicon.im        │ ~45%    │ ~95%      │ 256px高清   │
-// │ ③   │ Google FaviconV2  │ ~3%     │ ~98%      │ 128px高清   │
-// │ ④   │ Google S2         │ ~1.5%   │ ~99.5%    │ 128px稳定   │
-// │ ⑤   │ DuckDuckGo        │ ~0.3%   │ ~99.8%    │ 隐私友好    │
-// │ ⑥   │ 自建besticon      │ ~0.1%   │ ~99.9%    │ 智能爬取    │
-// │ ⑦   │ 首字母fallback    │ 100%    │ 100%      │ 始终可用    │
-// └─────────────────────────────────────────────────────────────────┘
-//
-// 策略：优先直接获取（最真实），失败后回退到第三方服务
-// 自建服务部署文档：FAVICON_SERVICE.md
-// GitHub: https://github.com/mat/besticon
+// 回退链：
+// ① favicon.im (256px, Cloudflare, ~95%成功率)
+// ② Google S2 (128px, 稳定, ~99%累计成功率)  
+// ③ DuckDuckGo (备选, ~99.5%累计成功率)
+// ④ 首字母 fallback (100%可用)
 
-const FAVICON_CONFIG={
-  // 默认优先直接获取，失败后使用 favicon.im
-  primary:'direct',
-  // 自建服务地址（如需自建，取消注释并填写地址）
-  // selfHosted:'https://your-besticon-service.com/icon',
-  // 例如 HuggingFace Spaces: 'https://arwei944-besticon-service.hf.space/icon'
+const FAVICON_SOURCES={
+  // 主源：favicon.im - 256px高清，Cloudflare CDN
+  primary:(d)=>'https://favicon.im/'+d+'?larger=true',
+  // 备选1：Google S2 - 128px，老牌稳定
+  backup1:(d)=>'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
+  // 备选2：DuckDuckGo
+  backup2:(d)=>'https://icons.duckduckgo.com/ip3/'+d+'.ico',
 };
 
-function getFaviconSources(url){
+// 全局存储每个URL的图标源列表
+const FAVICON_CACHE=new Map();
+
+function getFaviconUrl(url){
+  try{
+    const d=new URL(url).hostname;
+    return FAVICON_SOURCES.primary(d);
+  }catch{return''}
+}
+
+function faviconImg(url, fallback){
   try{
     const d=new URL(url).hostname;
     const sources=[
-      // ① 直接获取网站favicon - 最原始真实，~50%成功率
-      url.replace(/\/.*$/,'')+'/favicon.ico',
-      // ② favicon.im - 256px高清，Cloudflare加速，~95%累计成功率
-      'https://favicon.im/'+d+'?larger=true',
-      // ③ Google FaviconV2 - 128px高清，~98%累计成功率
-      'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://'+d+'&size=128',
-      // ④ Google S2 - 128px，~99.5%累计成功率
-      'https://www.google.com/s2/favicons?domain='+d+'&sz=128',
-      // ⑤ DuckDuckGo - ~99.8%累计成功率
-      'https://icons.duckduckgo.com/ip3/'+d+'.ico',
+      FAVICON_SOURCES.primary(d),
+      FAVICON_SOURCES.backup1(d),
+      FAVICON_SOURCES.backup2(d)
     ];
-    // ⑥ 自建服务（如果配置了）- ~99.9%累计成功率
-    if(FAVICON_CONFIG.selfHosted){
-      sources.push(FAVICON_CONFIG.selfHosted+'?url='+encodeURIComponent(url)+'&size=128');
-    }
-    return sources;
-  }catch{return[]}
+    const id='fi_'+Math.random().toString(36).slice(2,9);
+    FAVICON_CACHE.set(id, {sources, fallback, idx:0});
+    return '<img id="'+id+'" src="'+sources[0]+'" alt="" onerror="faviconTryNext(this)">';
+  }catch{
+    return '<span>'+fallback+'</span>';
+  }
 }
-function getFavicon(u){const s=getFaviconSources(u);return s.length?s[0]:''}
-function faviconImg(url, fallback){
-  const sources=getFaviconSources(url).map(s=>"'"+s+"'").join(',');
-  return '<img src="'+getFavicon(url)+'" alt="" data-fallback="'+fallback+'" data-sources="['+sources+']" onerror="faviconFallback(this)">';
-}
-function faviconFallback(img){
-  try{
-    const sources=JSON.parse(img.dataset.sources||'[]');
-    const current=img.src;
-    const idx=sources.findIndex(s=>s===current);
-    if(idx>=0&&idx<sources.length-1){
-      img.src=sources[idx+1];
-      return;
-    }
-    img.style.display='none';
-    img.parentElement.textContent=img.dataset.fallback||'?';
-  }catch(e){
-    img.style.display='none';
-    img.parentElement.textContent=img.dataset.fallback||'?';
+
+function faviconTryNext(img){
+  const cache=FAVICON_CACHE.get(img.id);
+  if(!cache)return;
+  cache.idx++;
+  if(cache.idx<cache.sources.length){
+    img.src=cache.sources[cache.idx];
+  }else{
+    img.outerHTML='<span>'+cache.fallback+'</span>';
+    FAVICON_CACHE.delete(img.id);
   }
 }
 
